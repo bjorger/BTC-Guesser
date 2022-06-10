@@ -13,6 +13,12 @@ export class User {
   @rangeKey()
   createdAt: Date;
 
+  @rangeKey()
+  updatedAt: Date;
+
+  @attribute()
+  email: string;
+
   @attribute()
   state: UserState;
 
