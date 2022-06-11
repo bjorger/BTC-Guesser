@@ -1,14 +1,11 @@
 import { ApiGatewayEvent } from "../common/apigateway/apigateway-event";
 import { ApiGatewayResponse } from "../common/apigateway/apigateway-response";
-import { GetByIdApp } from "../apps/get-by-id-app";
-import { TodoDynamoClientRepository } from "../common/todo-dynamoclient-repository";
 import { LambdaApp } from "../apps/lambda-app";
 import { UserDynamoClientRepository } from "../common/user-dynamoclient-repository";
 import { CreateUserApp } from "../apps/create-user-app";
 
 /**
- * Sample Lambda function which creates an instance of a GetByIdApp and executes it.
- * The GetByIdApp evaluates the request path parameters and queries DynamoDB for the Id given.
+ * Lambda function which creates an instance of a CreateUserApp and executes it.
  *
  * @param {Object} event - Input event to the Lambda function
  *

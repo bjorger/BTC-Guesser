@@ -4,10 +4,6 @@ import { ApiGatewayResponse } from "../common/apigateway/apigateway-response";
 import { LambdaApp } from "./lambda-app";
 import { UserRepository } from "../common/userRepository";
 
-/**
- * PostApp is a LambdaApp that puts a new record into DynamoDB using the API Gateway event body as the record content.
- *
- */
 export class CreateUserApp implements LambdaApp {
     repository: UserRepository;
 
@@ -22,10 +18,10 @@ export class CreateUserApp implements LambdaApp {
             const { username, password } = JSON.parse(event.body);
             if (!username) {
                 console.log("Body is missing the title");
-                return { statusCode: 422 };
+                return { statusCode: 422, body: "Body is missing the title"};
             } else if (!password) {
                 console.log("Body is missing the password");
-                return { statusCode: 422 };
+                return { statusCode: 422, body: "Body is missing the password" };
             }
             _username = username;
             _password = password;
@@ -39,7 +35,7 @@ export class CreateUserApp implements LambdaApp {
             return { statusCode: 201, body: JSON.stringify(result) };
         } catch (err) {
             console.log(err.message);
-            return { statusCode: 500 };
+            return { statusCode: 500, body: "Could not create user" };
         }
     }
 }

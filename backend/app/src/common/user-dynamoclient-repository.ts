@@ -2,7 +2,6 @@ import { DynamoDB } from "aws-sdk";
 import { User } from "./user";
 import { UserRepository } from "./userRepository";
 import * as bcrypt from "bcrypt";
-import { v4 as uuid4 } from "uuid";
 
 export class UserDynamoClientRepository implements UserRepository {
     docClient: DynamoDB.DocumentClient;
@@ -22,7 +21,6 @@ export class UserDynamoClientRepository implements UserRepository {
         const hashed = await bcrypt.hash(password, salt);
 
         const user = new User();
-        user.id = uuid4();
         user.createdAt = new Date();
         user.password = hashed;
         user.username = username;
@@ -31,11 +29,17 @@ export class UserDynamoClientRepository implements UserRepository {
         const params: DynamoDB.DocumentClient.PutItemInput = {
             TableName: table,
             Item: user,
+            ConditionExpression: "attribute_not_exists(username)",
         };
 
-        console.log(`Storing record ${user.id} in the ${table} Table.`);
-        await this.docClient.put(params).promise();
-        return { user };
+        try {
+            await this.docClient.put(params).promise();
+            console.log(`Stored record ${user.username} in the ${table} Table.`);
+
+            return { user };
+        } catch {
+            throw new Error("Could not create User");
+        }
     }
 
     loginUser(username: string, password: string, table: string): Promise<string> {

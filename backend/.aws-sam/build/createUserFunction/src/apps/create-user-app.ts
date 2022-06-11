@@ -39,7 +39,7 @@ export class CreateUserApp implements LambdaApp {
             return { statusCode: 201, body: JSON.stringify(result) };
         } catch (err) {
             console.log(err.message);
-            return { statusCode: 500 };
+            return { statusCode: 500, body: "Could not create user" };
         }
     }
 }
