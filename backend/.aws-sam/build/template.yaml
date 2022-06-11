@@ -3,65 +3,35 @@ Description: sam-app
 Transform:
 - AWS::Serverless-2016-10-31
 Resources:
-  getByIdFunction:
+  createUserFunction:
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: makefile
-      SamResourceId: getByIdFunction
+      SamResourceId: createUserFunction
     Properties:
-      CodeUri: getByIdFunction
-      Handler: dist/src/handlers/get-by-id.handler
+      CodeUri: createUserFunction
+      Handler: dist/src/handlers/create-user.handler
       Runtime: nodejs12.x
       Architectures:
       - x86_64
       MemorySize: 128
       Timeout: 100
-      Description: A simple example includes a HTTP get method to get one item by
-        id from a DynamoDB table.
+      Description: Function that creates a user.
       Policies:
       - DynamoDBCrudPolicy:
           TableName:
-            Ref: SampleTable
+            Ref: Users
       Environment:
         Variables:
-          SAMPLE_TABLE:
-            Ref: SampleTable
+          TABLE:
+            Ref: Users
       Events:
         Api:
           Type: Api
           Properties:
-            Path: /{id}
-            Method: GET
-  putItemFunction:
-    Type: AWS::Serverless::Function
-    Metadata:
-      BuildMethod: makefile
-      SamResourceId: putItemFunction
-    Properties:
-      CodeUri: putItemFunction
-      Handler: dist/src/handlers/post.handler
-      Runtime: nodejs12.x
-      Architectures:
-      - x86_64
-      MemorySize: 128
-      Timeout: 100
-      Description: A simple example includes a HTTP post method to add one item to
-        a DynamoDB table.
-      Policies:
-      - DynamoDBCrudPolicy:
-          TableName:
-            Ref: SampleTable
-      Environment:
-        Variables:
-          SAMPLE_TABLE:
-            Ref: SampleTable
-      Events:
-        Api:
-          Type: Api
-          Properties:
-            Path: /
+            Path: /create-user
             Method: POST
-  SampleTable:
+  Users:
     Type: AWS::Serverless::SimpleTable
     Properties:
       PrimaryKey:
