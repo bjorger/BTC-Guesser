@@ -5,3 +5,7 @@ export interface UserResponse {
     score: number;
     state: UserState;
 }
+
+export interface LoginResponse {
+    JWT: string;
+}

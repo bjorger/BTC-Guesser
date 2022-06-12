@@ -4,7 +4,7 @@ import { ApiGatewayResponse } from "../common/apigateway/apigateway-response";
 import { LambdaApp } from "./lambda-app";
 import { UserRepository } from "../common/user/userRepository";
 
-export class CreateUserApp implements LambdaApp {
+export class LoginUserApp implements LambdaApp {
     repository: UserRepository;
 
     constructor(repository: UserRepository) {
@@ -14,11 +14,12 @@ export class CreateUserApp implements LambdaApp {
     async run(event: ApiGatewayEvent): Promise<ApiGatewayResponse> {
         let _username: string;
         let _password: string;
+        
         try {
             const { username, password } = JSON.parse(event.body);
             if (!username) {
                 console.log("Body is missing the username");
-                return { statusCode: 422, body: "Body is missing the title" };
+                return { statusCode: 422, body: "Body is missing the username" };
             } else if (!password) {
                 console.log("Body is missing the password");
                 return { statusCode: 422, body: "Body is missing the password" };
@@ -31,11 +32,11 @@ export class CreateUserApp implements LambdaApp {
         }
 
         try {
-            const result = await this.repository.createUser(_username, _password);
+            const result = await this.repository.loginUser(_username, _password);
             return { statusCode: 201, body: JSON.stringify(result) };
         } catch (err) {
             console.log(err.message);
-            return { statusCode: 500, body: "Could not create user" };
+            return { statusCode: 500, body: "Could not login user" };
         }
     }
 }

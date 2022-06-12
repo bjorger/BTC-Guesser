@@ -15,7 +15,7 @@ Transform:
 # Resources declares the AWS resources that you want to include in the stack
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
 Resources:
-    # This is a Lambda function config associated with the source code: put-item.js
+    # This is a Lambda function config associated with the source code: create-user.ts
     createUserFunction:
         Type: AWS::Serverless::Function
         Metadata:
@@ -42,6 +42,34 @@ Resources:
                     Type: Api
                     Properties:
                         Path: /create-user
+                        Method: POST
+
+    loginUserFunction:
+        Type: AWS::Serverless::Function
+        Metadata:
+            BuildMethod: makefile
+        Properties:
+            CodeUri: app/
+            Handler: dist/src/handlers/login-user.handler
+            Runtime: nodejs12.x
+            Architectures:
+                - x86_64
+            MemorySize: 128
+            Timeout: 100
+            Description: Function that logs the user in.
+            Policies:
+                # Give Create/Read/Update/Delete Permissions to the SampleTable
+                - DynamoDBCrudPolicy:
+                      TableName: !Ref Users
+            Environment:
+                Variables:
+                    # Make table name accessible as environment variable from function code during execution
+                    USER_TABLE: !Ref Users
+            Events:
+                Api:
+                    Type: Api
+                    Properties:
+                        Path: /login-user
                         Method: POST
     # Simple syntax to create a DynamoDB table with a single attribute primary key, more in
     # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesssimpletable

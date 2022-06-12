@@ -1,3 +1,6 @@
 /node_modules
 app/node_modules
 .aws-sam
+
+app/private.pem
+app/public.pem

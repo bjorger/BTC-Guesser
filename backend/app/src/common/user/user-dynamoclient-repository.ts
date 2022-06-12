@@ -2,7 +2,11 @@ import { DynamoDB } from "aws-sdk";
 import { User } from "./user";
 import { UserRepository } from "./userRepository";
 import * as bcrypt from "bcrypt";
-import { UserResponse } from "./userResponse";
+import { LoginResponse, UserResponse } from "./userResponse";
+import { unmarshall } from "@aws-sdk/util-dynamodb";
+import { sign, SignOptions } from "jsonwebtoken";
+import * as fs from "fs";
+import * as path from "path";
 
 export class UserDynamoClientRepository implements UserRepository {
     docClient: DynamoDB.DocumentClient;
@@ -39,8 +43,39 @@ export class UserDynamoClientRepository implements UserRepository {
         }
     }
 
-    loginUser(username: string, password: string): Promise<string> {
-        throw new Error("Method not implemented.");
+    async loginUser(username: string, password: string): Promise<LoginResponse> {
+        const params: DynamoDB.DocumentClient.GetItemInput = {
+            TableName: this.userTable,
+            Key: {
+                username,
+            },
+        };
+
+        const result = await this.docClient.get(params).promise();
+
+        if (!result || !result.Item) {
+            throw new Error("User not found");
+        }
+
+        const user = unmarshall(result.Item) as User;
+        const valid_password = await bcrypt.compare(password, user.password);
+
+        if (!valid_password) {
+            throw new Error("Passwords do not match");
+        }
+
+        const payload = { username: user.username, createdAt: user.createdAt };
+        const privateKey = fs.readFileSync(path.join(__dirname, "./../../private.key"));
+
+        const signInOptions: SignOptions = {
+            // RS256 uses a public/private key pair. The API provides the private key
+            // to generate the JWT. The client gets a public key to validate the
+            // signature
+            algorithm: "RS256",
+            expiresIn: "1h",
+        };
+
+        return { JWT: sign(payload, privateKey, signInOptions) };
     }
     getUserById(id: string): Promise<User> {
         throw new Error("Method not implemented.");
