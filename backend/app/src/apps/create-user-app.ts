@@ -2,7 +2,7 @@ import { ApiGatewayEvent } from "../common/apigateway/apigateway-event";
 import { ApiGatewayResponse } from "../common/apigateway/apigateway-response";
 
 import { LambdaApp } from "./lambda-app";
-import { UserRepository } from "common/user/userRepository";
+import { UserRepository } from "../common/user/userRepository";
 
 export class CreateUserApp implements LambdaApp {
     repository: UserRepository;

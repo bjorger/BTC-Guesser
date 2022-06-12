@@ -1,8 +1,8 @@
-import { ApiGatewayEvent } from "common/apigateway/apigateway-event";
-import { ApiGatewayResponse } from "common/apigateway/apigateway-response";
-import { LambdaApp } from "apps/lambda-app";
-import { UserDynamoClientRepository } from "common/user/user-dynamoclient-repository";
-import { CreateUserApp } from "apps/create-user-app";
+import { ApiGatewayEvent } from "../common/apigateway/apigateway-event";
+import { ApiGatewayResponse } from "../common/apigateway/apigateway-response";
+import { LambdaApp } from "../apps/lambda-app";
+import { UserDynamoClientRepository } from "../common/user/user-dynamoclient-repository";
+import { CreateUserApp } from "../apps/create-user-app";
 
 /**
  * Lambda function which creates an instance of a CreateUserApp and executes it.
