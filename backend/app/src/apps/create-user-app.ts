@@ -2,7 +2,7 @@ import { ApiGatewayEvent } from "../common/apigateway/apigateway-event";
 import { ApiGatewayResponse } from "../common/apigateway/apigateway-response";
 
 import { LambdaApp } from "./lambda-app";
-import { UserRepository } from "../common/userRepository";
+import { UserRepository } from "common/user/userRepository";
 
 export class CreateUserApp implements LambdaApp {
     repository: UserRepository;
@@ -18,7 +18,7 @@ export class CreateUserApp implements LambdaApp {
             const { username, password } = JSON.parse(event.body);
             if (!username) {
                 console.log("Body is missing the title");
-                return { statusCode: 422, body: "Body is missing the title"};
+                return { statusCode: 422, body: "Body is missing the title" };
             } else if (!password) {
                 console.log("Body is missing the password");
                 return { statusCode: 422, body: "Body is missing the password" };

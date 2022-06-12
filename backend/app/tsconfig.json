@@ -13,6 +13,8 @@
         "esModuleInterop": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "useUnknownInCatchVariables": false
-    }
+        "useUnknownInCatchVariables": false,
+        "baseUrl": "src"
+    },
+    "include": ["src"]
 }

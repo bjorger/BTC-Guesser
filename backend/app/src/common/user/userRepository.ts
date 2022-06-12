@@ -1,11 +1,12 @@
 import { User } from "./user";
+import { UserResponse } from "./userResponse";
 
 export interface UserRepository {
     createUser(
         username: string,
         password: string,
     ): Promise<{
-        user: User;
+        user: UserResponse;
     }>;
     loginUser(username: string, password: string, table: string): Promise<string>;
     getUserById(id: string, table: string): Promise<User>;
