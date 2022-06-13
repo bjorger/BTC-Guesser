@@ -3,20 +3,17 @@ import { User } from "./user";
 import { UserRepository } from "./userRepository";
 import * as bcrypt from "bcrypt";
 import { LoginResponse, UserResponse } from "./userResponse";
-import { sign, SignOptions } from "jsonwebtoken";
+import { sign, verify, SignOptions } from "jsonwebtoken";
 import { ERROR_PASSWORDS_NOT_MATCH, ERROR_USER_NOT_FOUND } from "../errors";
 
 export class UserDynamoClientRepository implements UserRepository {
     docClient: DynamoDB.DocumentClient;
     userTable: string = process.env["USER_TABLE"] || "";
     secret = process.env["JWT_SECRET"] || "";
+    signOptions: SignOptions = { expiresIn: "1h" };
 
     constructor() {
         this.docClient = new DynamoDB.DocumentClient();
-    }
-
-    loginUserWithJWT(jwt: string): Promise<LoginResponse> {
-        throw new Error("Method not implemented.");
     }
 
     informUser(username: string): Promise<UserResponse> {
@@ -77,10 +74,13 @@ export class UserDynamoClientRepository implements UserRepository {
         }
 
         const payload = { username: user.username };
-        const options =  { expiresIn: "1h" };
 
-        const JWT = sign(payload, this.secret, options);
+        const JWT = sign(payload, this.secret, this.signOptions);
 
         return { JWT };
+    }
+
+    async loginUserWithJWT(jwt: string): Promise<LoginResponse> {
+        const result = verify(jwt, this.secret, this.signOptions);
     }
 }
