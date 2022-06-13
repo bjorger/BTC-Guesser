@@ -3,14 +3,13 @@ import { User } from "./user";
 import { UserRepository } from "./userRepository";
 import * as bcrypt from "bcrypt";
 import { LoginResponse, UserResponse } from "./userResponse";
-import { sign, verify, SignOptions } from "jsonwebtoken";
-import { ERROR_PASSWORDS_NOT_MATCH, ERROR_USER_NOT_FOUND } from "../errors";
+import { sign, verify } from "jsonwebtoken";
+import { ERROR_INVALID_JWT, ERROR_PASSWORDS_NOT_MATCH, ERROR_USER_NOT_FOUND } from "../errors";
 
 export class UserDynamoClientRepository implements UserRepository {
     docClient: DynamoDB.DocumentClient;
     userTable: string = process.env["USER_TABLE"] || "";
     secret = process.env["JWT_SECRET"] || "";
-    signOptions: SignOptions = { expiresIn: "1h" };
 
     constructor() {
         this.docClient = new DynamoDB.DocumentClient();
@@ -70,17 +69,25 @@ export class UserDynamoClientRepository implements UserRepository {
         const valid_password = await bcrypt.compare(password, user.password);
 
         if (!valid_password) {
-            throw new Error(ERROR_PASSWORDS_NOT_MATCH);
+            throw new Error(ERROR_PASSWORDS_DO_NOT_MATCH);
         }
 
         const payload = { username: user.username };
 
-        const JWT = sign(payload, this.secret, this.signOptions);
+        const JWT = sign(payload, this.secret);
 
         return { JWT };
     }
 
-    async loginUserWithJWT(jwt: string): Promise<LoginResponse> {
-        const result = verify(jwt, this.secret, this.signOptions);
+    async loginUserWithJWT(JWT: string): Promise<LoginResponse> {
+        try {
+            const result = verify(JWT, this.secret);
+
+            console.log("result: ", result);
+
+            return { JWT };
+        } catch {
+            throw new Error(ERROR_INVALID_JWT);
+        }
     }
 }

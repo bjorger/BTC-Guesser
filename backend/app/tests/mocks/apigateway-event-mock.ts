@@ -7,6 +7,7 @@ export class ApiGatewayEventMock implements ApiGatewayEvent {
     httpMethod = "post";
     headers = {
         "Content-Type": "application/json",
+        Authorization: "",
     };
     pathParameters = {};
     requestContext = {

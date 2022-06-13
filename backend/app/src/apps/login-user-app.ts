@@ -3,7 +3,7 @@ import { ApiGatewayResponse } from "../common/apigateway/apigateway-response";
 
 import { LambdaApp } from "./lambda-app";
 import { UserRepository } from "../common/user/userRepository";
-import { ERROR_PASSWORDS_NOT_MATCH, ERROR_USER_NOT_FOUND } from "../common/errors";
+import { ERROR_INVALID_JWT, ERROR_PASSWORDS_NOT_MATCH, ERROR_USER_NOT_FOUND } from "../common/errors";
 
 export class LoginUserApp implements LambdaApp {
     repository: UserRepository;
@@ -16,8 +16,26 @@ export class LoginUserApp implements LambdaApp {
         let _username: string;
         let _password: string;
 
+        const headers = event.headers;
+
+        if ("Authorization" in headers) {
+            const JWT = headers.Authorization.split(" ")[1];
+            if (JWT) {
+                try {
+                    const result = await this.repository.loginUserWithJWT(JWT);
+                    return { statusCode: 201, body: JSON.stringify(result) };
+                } catch (err) {
+                    if (err.message === ERROR_INVALID_JWT) {
+                        return { statusCode: 401, body: ERROR_INVALID_JWT };
+                    }
+                    return { statusCode: 500, body: "Could not login user" };
+                }
+            }
+        }
+
         try {
             const { username, password } = JSON.parse(event.body);
+
             if (!username) {
                 return { statusCode: 422, body: "Body is missing the username" };
             } else if (!password) {
@@ -26,7 +44,7 @@ export class LoginUserApp implements LambdaApp {
             _username = username;
             _password = password;
         } catch (err) {
-            console.log(err.message);
+            console.error(err.message);
 
             return { statusCode: 400 };
         }
