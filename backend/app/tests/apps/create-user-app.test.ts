@@ -6,9 +6,7 @@ import { ApiGatewayEventMock } from "../mocks/apigateway-event-mock";
 import { UserState, UserResponse, UserRepository } from "../../src/common/user";
 import { CreateUserApp } from "../../src/apps/create-user-app";
 
-describe("PostApp instance", () => {
-    // Stubs out our UserRepository interface so we can simulate the expected behavior
-    // with a successful "put" to the underlying data store.
+describe("UserCreate instance", () => {
     const repoMock = new Mock<UserRepository>()
         .setup((instance) => instance.createUser("Robin_Braumann", "Hallo123"))
         .returns(

@@ -3,17 +3,28 @@ import { User } from "./user";
 import { UserRepository } from "./userRepository";
 import * as bcrypt from "bcrypt";
 import { LoginResponse, UserResponse } from "./userResponse";
-import { unmarshall } from "@aws-sdk/util-dynamodb";
 import { sign, SignOptions } from "jsonwebtoken";
-import * as fs from "fs";
-import * as path from "path";
+import { ERROR_PASSWORDS_NOT_MATCH, ERROR_USER_NOT_FOUND } from "../errors";
 
 export class UserDynamoClientRepository implements UserRepository {
     docClient: DynamoDB.DocumentClient;
     userTable: string = process.env["USER_TABLE"] || "";
+    secret = process.env["JWT_SECRET"] || "";
 
     constructor() {
         this.docClient = new DynamoDB.DocumentClient();
+    }
+
+    loginUserWithJWT(jwt: string): Promise<LoginResponse> {
+        throw new Error("Method not implemented.");
+    }
+
+    informUser(username: string): Promise<UserResponse> {
+        throw new Error("Method not implemented.");
+    }
+
+    placeGuess(username: string, guess: number): Promise<UserResponse> {
+        throw new Error("Method not implemented.");
     }
 
     async createUser(username: string, password: string): Promise<UserResponse> {
@@ -54,36 +65,22 @@ export class UserDynamoClientRepository implements UserRepository {
         const result = await this.docClient.get(params).promise();
 
         if (!result || !result.Item) {
-            throw new Error("User not found");
+            throw new Error(ERROR_USER_NOT_FOUND);
         }
 
-        const user = unmarshall(result.Item) as User;
+        const user = result.Item as User;
+
         const valid_password = await bcrypt.compare(password, user.password);
 
         if (!valid_password) {
-            throw new Error("Passwords do not match");
+            throw new Error(ERROR_PASSWORDS_NOT_MATCH);
         }
 
-        const payload = { username: user.username, createdAt: user.createdAt };
-        const privateKey = fs.readFileSync(path.join(__dirname, "./../../private.key"));
+        const payload = { username: user.username };
+        const options =  { expiresIn: "1h" };
 
-        const signInOptions: SignOptions = {
-            // RS256 uses a public/private key pair. The API provides the private key
-            // to generate the JWT. The client gets a public key to validate the
-            // signature
-            algorithm: "RS256",
-            expiresIn: "1h",
-        };
+        const JWT = sign(payload, this.secret, options);
 
-        return { JWT: sign(payload, privateKey, signInOptions) };
-    }
-    getUserById(id: string): Promise<User> {
-        throw new Error("Method not implemented.");
-    }
-    updateUserScoreById(id: string, score: number): Promise<User> {
-        throw new Error("Method not implemented.");
-    }
-    updateUserStateById(id: string): Promise<User> {
-        throw new Error("Method not implemented.");
+        return { JWT };
     }
 }
