@@ -72,6 +72,37 @@ Resources:
                     Properties:
                         Path: /login-user
                         Method: POST
+
+    placeGuessFunction:
+        Type: AWS::Serverless::Function
+        Metadata:
+            BuildMethod: makefile
+        Properties:
+            CodeUri: app/
+            Handler: dist/src/handlers/place-guess.handler
+            Runtime: nodejs12.x
+            Architectures:
+                - x86_64
+            MemorySize: 128
+            Timeout: 100
+            Description: Function that lets the user make a guess.
+            Policies:
+                # Give Create/Read/Update/Delete Permissions to the SampleTable
+                - DynamoDBCrudPolicy:
+                      TableName: !Ref Users
+                      TableName: !Ref Guesses
+            Environment:
+                Variables:
+                    # Make table name accessible as environment variable from function code during execution
+                    USER_TABLE: !Ref Users
+                    GUESS_TABLE: !Ref Guesses
+                    JWT_SECRET: 60678016E0DC0B50727132AD18A91313B457731B9C819151FEED02B78C70CFE2
+            Events:
+                Api:
+                    Type: Api
+                    Properties:
+                        Path: /place-guess
+                        Method: POST
     # Simple syntax to create a DynamoDB table with a single attribute primary key, more in
     # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesssimpletable
 
@@ -80,6 +111,16 @@ Resources:
         Properties:
             PrimaryKey:
                 Name: username
+                Type: String
+            ProvisionedThroughput:
+                ReadCapacityUnits: 2
+                WriteCapacityUnits: 2
+
+    Guesses:
+        Type: AWS::Serverless::SimpleTable
+        Properties:
+            PrimaryKey:
+                Name: id
                 Type: String
             ProvisionedThroughput:
                 ReadCapacityUnits: 2

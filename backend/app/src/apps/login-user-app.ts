@@ -3,7 +3,7 @@ import { ApiGatewayResponse } from "../common/apigateway/apigateway-response";
 
 import { LambdaApp } from "./lambda-app";
 import { UserRepository } from "../common/user/userRepository";
-import { ERROR_INVALID_JWT, ERROR_PASSWORDS_NOT_MATCH, ERROR_USER_NOT_FOUND } from "../common/errors";
+import { ERROR_INVALID_JWT, ERROR_PASSWORDS_DO_NOT_MATCH, ERROR_USER_NOT_FOUND } from "../common/errors";
 
 export class LoginUserApp implements LambdaApp {
     repository: UserRepository;
@@ -56,8 +56,8 @@ export class LoginUserApp implements LambdaApp {
             console.log(err.message);
             if (err.message === ERROR_USER_NOT_FOUND) {
                 return { statusCode: 400, body: ERROR_USER_NOT_FOUND };
-            } else if (err.message === ERROR_PASSWORDS_NOT_MATCH) {
-                return { statusCode: 401, body: ERROR_PASSWORDS_NOT_MATCH };
+            } else if (err.message === ERROR_PASSWORDS_DO_NOT_MATCH) {
+                return { statusCode: 401, body: ERROR_PASSWORDS_DO_NOT_MATCH };
             }
             return { statusCode: 500, body: "Could not login user" };
         }

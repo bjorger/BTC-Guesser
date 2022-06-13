@@ -4,11 +4,13 @@ import { UserRepository } from "./userRepository";
 import * as bcrypt from "bcrypt";
 import { LoginResponse, UserResponse } from "./userResponse";
 import { sign, verify } from "jsonwebtoken";
-import { ERROR_INVALID_JWT, ERROR_PASSWORDS_NOT_MATCH, ERROR_USER_NOT_FOUND } from "../errors";
+import { ERROR_INVALID_JWT, ERROR_PASSWORDS_DO_NOT_MATCH, ERROR_USER_NOT_FOUND } from "../errors";
+import { Bitcoin } from "../bitcoin";
 
 export class UserDynamoClientRepository implements UserRepository {
     docClient: DynamoDB.DocumentClient;
     userTable: string = process.env["USER_TABLE"] || "";
+    guessTable: string = process.env["GUESS_TABLE"] || "";
     secret = process.env["JWT_SECRET"] || "";
 
     constructor() {
@@ -16,10 +18,6 @@ export class UserDynamoClientRepository implements UserRepository {
     }
 
     informUser(username: string): Promise<UserResponse> {
-        throw new Error("Method not implemented.");
-    }
-
-    placeGuess(username: string, guess: number): Promise<UserResponse> {
         throw new Error("Method not implemented.");
     }
 
@@ -37,7 +35,7 @@ export class UserDynamoClientRepository implements UserRepository {
 
         try {
             await this.docClient.put(params).promise();
-            console.log(`Stored record ${user.username} in the ${this.userTable} Table.`);
+
             const { username, state, score } = user;
 
             return {
@@ -81,13 +79,32 @@ export class UserDynamoClientRepository implements UserRepository {
 
     async loginUserWithJWT(JWT: string): Promise<LoginResponse> {
         try {
-            const result = verify(JWT, this.secret);
-
-            console.log("result: ", result);
+            verify(JWT, this.secret);
 
             return { JWT };
         } catch {
             throw new Error(ERROR_INVALID_JWT);
         }
+    }
+
+    async placeGuess(username: string, guess: number): Promise<void> {
+        const coingeckoURL = "https://api.coingecko.com/api/v3/coins/bitcoin";
+
+        const response = await fetch(coingeckoURL, {
+            method: "GET",
+            headers: { accept: "application/json" },
+        });
+
+        const json = await response.json();
+
+        console.log(json);
+
+        const params: DynamoDB.DocumentClient.PutItemInput = {
+            TableName: this.guessTable,
+            Item: {
+                BTCPrice: 0,
+                guess,
+            },
+        };
     }
 }
