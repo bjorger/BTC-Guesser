@@ -87,7 +87,7 @@ Resources:
             Timeout: 100
             Description: Function that lets the user make a guess.
             Policies:
-                # Give Create/Read/Update/Delete Permissions to the SampleTable
+                - AmazonDynamoDBFullAccess
                 - DynamoDBCrudPolicy:
                       TableName: !Ref Users
                       TableName: !Ref Guesses
@@ -103,6 +103,37 @@ Resources:
                     Properties:
                         Path: /place-guess
                         Method: POST
+        
+    evaluateGuessFunction:
+        Type: AWS::Serverless::Function
+        Metadata:
+            BuildMethod: makefile
+        Properties:
+            CodeUri: app/
+            Handler: dist/src/handlers/place-guess.handler
+            Runtime: nodejs12.x
+            Architectures:
+                - x86_64
+            MemorySize: 128
+            Timeout: 100
+            Description: Function that lets the user make a guess.
+            Policies:
+                - AmazonDynamoDBFullAccess
+                - DynamoDBCrudPolicy:
+                      TableName: !Ref Users
+                      TableName: !Ref Guesses
+            Environment:
+                Variables:
+                    # Make table name accessible as environment variable from function code during execution
+                    USER_TABLE: !Ref Users
+                    GUESS_TABLE: !Ref Guesses
+            Events:
+                Api:
+                    Type: Api
+                    Properties:
+                        Path: /evaluate-guess
+                        Method: POST
+                        
     # Simple syntax to create a DynamoDB table with a single attribute primary key, more in
     # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesssimpletable
 

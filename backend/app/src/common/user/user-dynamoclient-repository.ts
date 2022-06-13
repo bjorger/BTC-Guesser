@@ -1,24 +1,21 @@
-import { DynamoDB } from "aws-sdk";
+import { DynamoDB, Lambda } from "aws-sdk";
 import { User } from "./user";
 import { UserRepository } from "./userRepository";
 import * as bcrypt from "bcrypt";
 import { LoginResponse, UserResponse } from "./userResponse";
 import { sign, verify } from "jsonwebtoken";
-import { ERROR_INVALID_JWT, ERROR_PASSWORDS_DO_NOT_MATCH, ERROR_USER_NOT_FOUND } from "../errors";
-import { Bitcoin } from "../bitcoin";
+import { ERROR_COULD_NOT_CREATE_USER, ERROR_INVALID_JWT, ERROR_PASSWORDS_DO_NOT_MATCH, ERROR_USER_NOT_FOUND } from "../errors";
 
 export class UserDynamoClientRepository implements UserRepository {
     docClient: DynamoDB.DocumentClient;
+    lambda: Lambda;
     userTable: string = process.env["USER_TABLE"] || "";
     guessTable: string = process.env["GUESS_TABLE"] || "";
     secret = process.env["JWT_SECRET"] || "";
 
     constructor() {
         this.docClient = new DynamoDB.DocumentClient();
-    }
-
-    informUser(username: string): Promise<UserResponse> {
-        throw new Error("Method not implemented.");
+        this.lambda = new Lambda();
     }
 
     async createUser(username: string, password: string): Promise<UserResponse> {
@@ -44,7 +41,7 @@ export class UserDynamoClientRepository implements UserRepository {
                 score,
             };
         } catch {
-            throw new Error("Could not create User");
+            throw new Error(ERROR_COULD_NOT_CREATE_USER);
         }
     }
 
@@ -85,26 +82,5 @@ export class UserDynamoClientRepository implements UserRepository {
         } catch {
             throw new Error(ERROR_INVALID_JWT);
         }
-    }
-
-    async placeGuess(username: string, guess: number): Promise<void> {
-        const coingeckoURL = "https://api.coingecko.com/api/v3/coins/bitcoin";
-
-        const response = await fetch(coingeckoURL, {
-            method: "GET",
-            headers: { accept: "application/json" },
-        });
-
-        const json = await response.json();
-
-        console.log(json);
-
-        const params: DynamoDB.DocumentClient.PutItemInput = {
-            TableName: this.guessTable,
-            Item: {
-                BTCPrice: 0,
-                guess,
-            },
-        };
     }
 }

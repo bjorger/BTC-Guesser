@@ -1,4 +1,11 @@
 export const ERROR_USER_NOT_FOUND = "Could not find User";
 export const ERROR_PASSWORDS_DO_NOT_MATCH = "Passwords do not match";
 export const ERROR_INVALID_JWT = "JWT is not valid";
-export const ERROR_COULD_NOT_CREATE_USER = "Could not create User"
+export const ERROR_COULD_NOT_CREATE_USER = "Could not create User";
+export const ERROR_COULD_NOT_CREATE_GUESS = "Could not create Guess";
+export const ERROR_JWT_MISSING = "No JWT in auth header found";
+export const ERROR_AUTH_HEADER_MISSING = "Authorization Header missing";
+export const ERROR_NO_BITCOIN_DATA_AVAILABLE = "Bitcoin Price Data not available";
+export const ERROR_USER_GUESSING = "User is currently guessing";
+export const ERROR_NO_GUESSES_FROM_USER = "User has not made any guesses yet";
+export const ERROR_INVALID_GUESS_OPTIONS = "Invalid value for the guess.";
