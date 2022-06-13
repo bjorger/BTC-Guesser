@@ -9,6 +9,7 @@ import {
     ERROR_COULD_NOT_CREATE_GUESS,
     ERROR_USER_GUESSING,
     ERROR_NO_GUESSES_FROM_USER,
+    ERROR_INVOCATION_FAILED,
 } from "../errors";
 import { Bitcoin } from "../bitcoin";
 import axios from "axios";
@@ -93,9 +94,20 @@ export class GuessDynamoClientRepository implements GuessRepository {
             throw new Error(ERROR_USER_NOT_FOUND);
         }
 
-        //invoke lambda here
+        const invocationParams: Lambda.InvocationRequest = {
+            FunctionName: "evaluateGuessFunction", // the lambda function we are going to invoke
+            InvocationType: "RequestResponse",
+            LogType: "Tail",
+            Payload: `{ "username" : ${username} }`,
+        };
 
-        return { guess: guessObject, user: { score: 0, username, state: UserState.GUESSING } };
+        try {
+            await this.lambda.invoke(invocationParams).promise();
+        } catch {
+            throw new Error(ERROR_INVOCATION_FAILED);
+        }
+
+        return { guess: guessObject, userState: UserState.GUESSING };
     }
 
     async getBTCPrice(): Promise<string> {

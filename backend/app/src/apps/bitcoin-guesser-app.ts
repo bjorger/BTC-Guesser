@@ -28,7 +28,7 @@ export class BitcoinGuesserApp implements LambdaApp {
 
         try {
             const { guess } = JSON.parse(event.body);
-            if (guess !== GuessOptions.DOWN || guess !== GuessOptions.UP) {
+            if (guess !== GuessOptions.DOWN && guess !== GuessOptions.UP) {
                 throw new Error(ERROR_INVALID_GUESS_OPTIONS);
             }
             const result = await this.repository.placeGuess(jwt, guess);

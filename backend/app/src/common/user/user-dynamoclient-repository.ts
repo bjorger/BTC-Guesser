@@ -1,4 +1,4 @@
-import { DynamoDB, Lambda } from "aws-sdk";
+import { DynamoDB } from "aws-sdk";
 import { User } from "./user";
 import { UserRepository } from "./userRepository";
 import * as bcrypt from "bcrypt";
@@ -8,14 +8,11 @@ import { ERROR_COULD_NOT_CREATE_USER, ERROR_INVALID_JWT, ERROR_PASSWORDS_DO_NOT_
 
 export class UserDynamoClientRepository implements UserRepository {
     docClient: DynamoDB.DocumentClient;
-    lambda: Lambda;
     userTable: string = process.env["USER_TABLE"] || "";
-    guessTable: string = process.env["GUESS_TABLE"] || "";
     secret = process.env["JWT_SECRET"] || "";
 
     constructor() {
         this.docClient = new DynamoDB.DocumentClient();
-        this.lambda = new Lambda();
     }
 
     async createUser(username: string, password: string): Promise<UserResponse> {
