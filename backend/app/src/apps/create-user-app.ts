@@ -3,7 +3,12 @@ import { ApiGatewayResponse } from "../common/apigateway/apigateway-response";
 
 import { LambdaApp } from "./lambda-app";
 import { UserRepository } from "../common/user/userRepository";
-import { ERROR_BODY_MISSING_PASSWORD, ERROR_BODY_MISSING_USERNAME } from "../common/errors";
+import {
+    ERROR_BODY_MISSING_PASSWORD,
+    ERROR_BODY_MISSING_USERNAME,
+    ERROR_CONFIRM_PASSWORD_MISSING,
+    ERROR_PASSWORDS_DO_NOT_MATCH,
+} from "../common/errors";
 
 export class CreateUserApp implements LambdaApp {
     repository: UserRepository;
@@ -15,12 +20,17 @@ export class CreateUserApp implements LambdaApp {
     async run(event: ApiGatewayEvent): Promise<ApiGatewayResponse> {
         let _username: string;
         let _password: string;
+
         try {
-            const { username, password } = JSON.parse(event.body);
+            const { username, password, confirmPassword } = JSON.parse(event.body);
             if (!username) {
                 return { statusCode: 422, body: ERROR_BODY_MISSING_USERNAME };
             } else if (!password) {
                 return { statusCode: 422, body: ERROR_BODY_MISSING_PASSWORD };
+            } else if (!confirmPassword) {
+                return { statusCode: 422, body: ERROR_CONFIRM_PASSWORD_MISSING };
+            } else if (confirmPassword !== password) {
+                return { statusCode: 422, body: ERROR_PASSWORDS_DO_NOT_MATCH };
             }
             _username = username;
             _password = password;

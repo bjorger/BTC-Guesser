@@ -12,11 +12,10 @@ export class BitcoinGuesserApp implements LambdaApp {
     }
 
     async run(event: ApiGatewayEvent): Promise<ApiGatewayResponse> {
-        const headers = event.headers;
         let jwt = "";
 
-        if ("Authorization" in headers) {
-            const JWT = headers.Authorization.split(" ")[1];
+        if ("Authorization" in event.headers) {
+            const JWT = event.headers.Authorization.split(" ")[1];
             if (JWT) {
                 jwt = JWT;
             } else {

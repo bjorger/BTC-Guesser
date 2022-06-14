@@ -7,7 +7,7 @@ import { ApiGatewayResponse } from "../../src/common/apigateway/apigateway-respo
 import { ApiGatewayEventMock } from "../mocks/apigateway-event-mock";
 import { UserState, UserResponse, UserRepository, UserDynamoClientRepository } from "../../src/common/user";
 import { CreateUserApp } from "../../src/apps/create-user-app";
-import { ERROR_COULD_NOT_CREATE_USER, ERROR_PASSWORD_TOO_SHORT, ERROR_USERNAME_TOO_SHORT } from "../../src/common/errors";
+import { ERROR_PASSWORD_TOO_SHORT, ERROR_USERNAME_TOO_SHORT } from "../../src/common/errors";
 import { DynamoDB } from "aws-sdk";
 
 chai.use(chaiAsPromised);
@@ -64,7 +64,6 @@ describe("UserCreate instance", () => {
 
         it("repository is called to create a user", async () => {
             const event = new ApiGatewayEventMock();
-
             const app = new CreateUserApp(repoMock.object());
             const response: ApiGatewayResponse = await app.run(event);
 
@@ -83,7 +82,7 @@ describe("UserCreate instance", () => {
                 .throws(new Error(ERROR_USERNAME_TOO_SHORT));
 
             const event = new ApiGatewayEventMock();
-            event.body = '{"username": "Robin", "password": "Hallo1234"}';
+            event.body = '{"username": "Robin", "password": "Hallo1234", "confirmPassword": "Hallo1234"}';
 
             const app = new CreateUserApp(repoMock.object());
             const response: ApiGatewayResponse = await app.run(event);
@@ -100,7 +99,7 @@ describe("UserCreate instance", () => {
                 .throws(new Error(ERROR_PASSWORD_TOO_SHORT));
 
             const event = new ApiGatewayEventMock();
-            event.body = '{"username": "Robin_Braumann", "password": "Hallo4"}';
+            event.body = '{"username": "Robin_Braumann", "password": "Hallo4", "confirmPassword": "Hallo4"}';
 
             const app = new CreateUserApp(repoMock.object());
             const response: ApiGatewayResponse = await app.run(event);
@@ -109,23 +108,6 @@ describe("UserCreate instance", () => {
             expect(response).to.have.property("body");
             expect(response.statusCode).to.equal(500);
             expect(response.body).to.equal(ERROR_PASSWORD_TOO_SHORT);
-        });
-
-        it("App returns error code 500 when password is too short", async () => {
-            const repoMock = new Mock<UserRepository>()
-                .setup((instance) => instance.createUser("Robin_Braumann", "Hallo123"))
-                .throws(new Error(ERROR_COULD_NOT_CREATE_USER));
-
-            const event = new ApiGatewayEventMock();
-            event.body = '{"username": "Robin_Braumann", "password": "Hallo123"}';
-
-            const app = new CreateUserApp(repoMock.object());
-            const response: ApiGatewayResponse = await app.run(event);
-
-            expect(response).to.have.property("statusCode");
-            expect(response).to.have.property("body");
-            expect(response.statusCode).to.equal(500);
-            expect(response.body).to.equal(ERROR_COULD_NOT_CREATE_USER);
         });
     });
 });

@@ -3,6 +3,7 @@ import { EvaluateGuessApp } from "../apps/evaluate-guess-app";
 import { GuessDynamoClientRepository } from "../common/guess/guess-dynamoclient-repository";
 import { ApiGatewayInvokeEvent } from "../common/apigateway/apigateway-invoke-event";
 import { InvokedLambdaApp } from "../apps/invoked-lambda-app";
+import { headers } from "../common/headers";
 
 export const handler = async (event: ApiGatewayInvokeEvent): Promise<ApiGatewayResponse> => {
     const repository = new GuessDynamoClientRepository();
@@ -11,5 +12,7 @@ export const handler = async (event: ApiGatewayInvokeEvent): Promise<ApiGatewayR
     const app: InvokedLambdaApp = new EvaluateGuessApp(repository);
 
     console.log("Running the EvaluateGuessApp");
-    return await app.run(event);
+    const response = await app.run(event);
+
+    return { ...response, headers };
 };

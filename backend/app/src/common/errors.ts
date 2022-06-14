@@ -17,3 +17,4 @@ export const ERROR_BODY_MISSING_GUESS_ID = "Body is missing the guessId";
 export const ERROR_COULD_NOT_LOGIN_USER = "Could not login user";
 export const ERROR_USERNAME_TOO_SHORT = "A username must contain at least 7 characters";
 export const ERROR_PASSWORD_TOO_SHORT = "A password must contain at least 7 characters";
+export const ERROR_CONFIRM_PASSWORD_MISSING = "Confirm Password is missing!";
