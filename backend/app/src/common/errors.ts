@@ -14,3 +14,4 @@ export const ERROR_COULD_NOT_UPDATE_SCORE = "Failed to update user score";
 export const ERROR_BODY_MISSING_USERNAME = "Body is missing the username";
 export const ERROR_BODY_MISSING_PASSWORD = "Body is missing the password";
 export const ERROR_BODY_MISSING_GUESS_ID = "Body is missing the guessId";
+export const ERROR_COULD_NOT_LOGIN_USER = "Could not login user";

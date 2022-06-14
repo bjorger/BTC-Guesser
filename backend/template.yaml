@@ -72,6 +72,35 @@ Resources:
                     Properties:
                         Path: /login-user
                         Method: POST
+    
+    getUserByUsername:
+        Type: AWS::Serverless::Function
+        Metadata:
+            BuildMethod: makefile
+        Properties:
+            CodeUri: app/
+            Handler: dist/src/handlers/get-user.handler
+            Runtime: nodejs12.x
+            Architectures:
+                - x86_64
+            MemorySize: 128
+            Timeout: 100
+            Description: Function that logs the user in.
+            Policies:
+                # Give Create/Read/Update/Delete Permissions to the SampleTable
+                - DynamoDBCrudPolicy:
+                      TableName: !Ref Users
+            Environment:
+                Variables:
+                    # Make table name accessible as environment variable from function code during execution
+                    USER_TABLE: !Ref Users
+                    JWT_SECRET: 60678016E0DC0B50727132AD18A91313B457731B9C819151FEED02B78C70CFE2
+            Events:
+                Api:
+                    Type: Api
+                    Properties:
+                        Path: /get-user
+                        Method: POST
 
     placeGuessFunction:
         Type: AWS::Serverless::Function

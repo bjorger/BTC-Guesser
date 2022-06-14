@@ -80,4 +80,27 @@ export class UserDynamoClientRepository implements UserRepository {
             throw new Error(ERROR_INVALID_JWT);
         }
     }
+
+    async getUserByUsername(username: string): Promise<UserResponse> {
+        const params: DynamoDB.DocumentClient.GetItemInput = {
+            TableName: this.userTable,
+            Key: {
+                username,
+            },
+        };
+
+        const result = await this.docClient.get(params).promise();
+
+        if (!result || !result.Item) {
+            throw new Error(ERROR_USER_NOT_FOUND);
+        }
+
+        const user = result.Item as User;
+
+        return {
+            username: user.username,
+            score: user.score,
+            state: user.state,
+        };
+    }
 }
