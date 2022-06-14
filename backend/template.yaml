@@ -78,6 +78,7 @@ Resources:
         Metadata:
             BuildMethod: makefile
         Properties:
+            Role: arn:aws:iam::481543764669:role/LambdaInvocation
             CodeUri: app/
             Handler: dist/src/handlers/place-guess.handler
             Runtime: nodejs12.x
@@ -97,6 +98,7 @@ Resources:
                     USER_TABLE: !Ref Users
                     GUESS_TABLE: !Ref Guesses
                     JWT_SECRET: 60678016E0DC0B50727132AD18A91313B457731B9C819151FEED02B78C70CFE2
+                    STATE_MACHINE_ARN: arn:aws:states:us-east-1:481543764669:stateMachine:EvaluateGuessStateMachine
             Events:
                 Api:
                     Type: Api
@@ -109,14 +111,15 @@ Resources:
         Metadata:
             BuildMethod: makefile
         Properties:
+            FunctionName: evaluateGuessFunction
             CodeUri: app/
-            Handler: dist/src/handlers/place-guess.handler
+            Handler: dist/src/handlers/evaluate-guess.handler
             Runtime: nodejs12.x
             Architectures:
                 - x86_64
             MemorySize: 128
             Timeout: 100
-            Description: Function that lets the user make a guess.
+            Description: Function that evaluates the guess of the user
             Policies:
                 - AmazonDynamoDBFullAccess
                 - DynamoDBCrudPolicy:
@@ -133,10 +136,7 @@ Resources:
                     Properties:
                         Path: /evaluate-guess
                         Method: POST
-                        
-    # Simple syntax to create a DynamoDB table with a single attribute primary key, more in
-    # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesssimpletable
-
+    
     Users:
         Type: AWS::Serverless::SimpleTable
         Properties:

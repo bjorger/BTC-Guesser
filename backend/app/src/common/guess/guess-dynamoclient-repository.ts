@@ -1,4 +1,4 @@
-import { DynamoDB, Lambda } from "aws-sdk";
+import { DynamoDB, StepFunctions } from "aws-sdk";
 import { User, UserState } from "../user";
 import { Guess, GuessOptions } from "./guess";
 import { JwtPayload, verify } from "jsonwebtoken";
@@ -9,7 +9,9 @@ import {
     ERROR_COULD_NOT_CREATE_GUESS,
     ERROR_USER_GUESSING,
     ERROR_NO_GUESSES_FROM_USER,
-    ERROR_INVOCATION_FAILED,
+    ERROR_STATEMACHINE_EXECUTION_FAILED as ERROR_STATE_MACHINE_EXECUTION_FAILED,
+    ERROR_INVALID_GUESS_OPTIONS,
+    ERROR_COULD_NOT_UPDATE_SCORE,
 } from "../errors";
 import { Bitcoin } from "../bitcoin";
 import axios from "axios";
@@ -19,14 +21,15 @@ import { GuessResponse } from "./guessResponse";
 
 export class GuessDynamoClientRepository implements GuessRepository {
     docClient: DynamoDB.DocumentClient;
-    lambda: Lambda;
+    stepFunctions: StepFunctions;
     userTable: string = process.env["USER_TABLE"] || "";
     guessTable: string = process.env["GUESS_TABLE"] || "";
-    secret = process.env["JWT_SECRET"] || "";
+    secret: string = process.env["JWT_SECRET"] || "";
+    stateMachineArn: string = process.env["STATE_MACHINE_ARN"] || "";
 
     constructor() {
         this.docClient = new DynamoDB.DocumentClient();
-        this.lambda = new Lambda();
+        this.stepFunctions = new StepFunctions();
     }
 
     async placeGuess(JWT: string, guess: number): Promise<GuessResponse> {
@@ -51,6 +54,10 @@ export class GuessDynamoClientRepository implements GuessRepository {
 
         if (!result || !result.Item) {
             throw new Error(ERROR_USER_NOT_FOUND);
+        }
+
+        if (guess !== GuessOptions.DOWN && guess !== GuessOptions.UP) {
+            throw new Error(ERROR_INVALID_GUESS_OPTIONS);
         }
 
         const user = result.Item as User;
@@ -94,17 +101,16 @@ export class GuessDynamoClientRepository implements GuessRepository {
             throw new Error(ERROR_USER_NOT_FOUND);
         }
 
-        const invocationParams: Lambda.InvocationRequest = {
-            FunctionName: "evaluateGuessFunction", // the lambda function we are going to invoke
-            InvocationType: "RequestResponse",
-            LogType: "Tail",
-            Payload: `{ "username" : ${username} }`,
+        const stateMachineParams: StepFunctions.StartExecutionInput = {
+            stateMachineArn: this.stateMachineArn,
+            input: JSON.stringify({ username, guessId: guessObject.id }),
         };
 
         try {
-            await this.lambda.invoke(invocationParams).promise();
-        } catch {
-            throw new Error(ERROR_INVOCATION_FAILED);
+            await this.stepFunctions.startExecution(stateMachineParams).promise();
+        } catch (error) {
+            console.log(error.message);
+            throw new Error(ERROR_STATE_MACHINE_EXECUTION_FAILED);
         }
 
         return { guess: guessObject, userState: UserState.GUESSING };
@@ -127,29 +133,54 @@ export class GuessDynamoClientRepository implements GuessRepository {
         return btcPrice;
     }
 
-    async evaluateGuess(username: string): Promise<void> {
+    async evaluateGuess(username: string, guessId: string): Promise<void> {
         const btcPrice = +(await this.getBTCPrice());
-        const params: DynamoDB.DocumentClient.QueryInput = {
+        const params: DynamoDB.DocumentClient.GetItemInput = {
             TableName: this.guessTable,
-            KeyConditionExpression: "username = :username",
-            ExpressionAttributeValues: {
-                ":username": username,
+            Key: {
+                id: guessId,
             },
-            ScanIndexForward: false,
-            Limit: 1,
         };
+        let guessResult = 0;
 
-        const result = await this.docClient.query(params).promise();
+        try {
+            const result = await this.docClient.get(params).promise();
 
-        if (!result || !result.Items) {
+            if (!result || !result.Item) {
+                throw new Error(ERROR_NO_GUESSES_FROM_USER);
+            }
+            const guess = result.Item as Guess;
+
+            if ((btcPrice > guess.btcPrice && guess.guess === GuessOptions.UP) || (btcPrice < guess.btcPrice && guess.guess === GuessOptions.DOWN)) {
+                guessResult = 1;
+            } else {
+                guessResult = -1;
+            }
+        } catch (error) {
+            console.error(error);
             throw new Error(ERROR_NO_GUESSES_FROM_USER);
         }
 
-        const guess = result.Items[0] as Guess;
+        try {
+            const updateUserParams: DynamoDB.DocumentClient.UpdateItemInput = {
+                TableName: this.userTable,
+                Key: {
+                    username,
+                },
+                UpdateExpression: "set score = score + :guess_result, #user_state = :new_state",
+                ExpressionAttributeNames: {
+                    "#user_state": "state",
+                },
+                ExpressionAttributeValues: {
+                    ":guess_result": guessResult,
+                    ":new_state": UserState.CAN_GUESS
+                },
+            };
 
-        if ((btcPrice > guess.btcPrice && guess.guess === GuessOptions.UP) || (btcPrice < guess.btcPrice && guess.guess === GuessOptions.DOWN)) {
-            console.log(1);
+            await this.docClient.update(updateUserParams).promise();
+        } catch (error) {
+            console.error(error.message);
+            throw new Error(ERROR_COULD_NOT_UPDATE_SCORE);
         }
-        console.log(-1);
     }
 }

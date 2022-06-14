@@ -1,26 +1,33 @@
-import { ApiGatewayEvent } from "../common/apigateway/apigateway-event";
 import { ApiGatewayResponse } from "../common/apigateway/apigateway-response";
-import { LambdaApp } from "./lambda-app";
 import { GuessRepository } from "../common/guess";
+import { ApiGatewayInvokeEvent } from "../common/apigateway/apigateway-invoke-event";
+import { InvokedLambdaApp } from "./invoked-lambda-app";
 
-export class EvaluateGuessApp implements LambdaApp {
+export class EvaluateGuessApp implements InvokedLambdaApp {
     repository: GuessRepository;
 
     constructor(repository: GuessRepository) {
         this.repository = repository;
     }
 
-    async run(event: ApiGatewayEvent): Promise<ApiGatewayResponse> {
+    async run(event: ApiGatewayInvokeEvent): Promise<ApiGatewayResponse> {
+        console.log("TEST");
+        console.log(event);
         try {
-            const { username } = JSON.parse(event.body);
+            const { username, guessId } = event;
 
             if (!username) {
                 throw new Error("Body is missing the username");
             }
 
-            await this.repository.evaluateGuess(username);
+            if (!guessId) {
+                throw new Error("Body is missing the guessId");
+            }
+
+            await this.repository.evaluateGuess(username, guessId);
             return { statusCode: 200 };
         } catch (err) {
+            console.error(err.message);
             return { statusCode: 500, body: err.message };
         }
     }

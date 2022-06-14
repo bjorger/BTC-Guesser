@@ -9,4 +9,5 @@ export const ERROR_NO_BITCOIN_DATA_AVAILABLE = "Bitcoin Price Data not available
 export const ERROR_USER_GUESSING = "User is currently guessing";
 export const ERROR_NO_GUESSES_FROM_USER = "User has not made any guesses yet";
 export const ERROR_INVALID_GUESS_OPTIONS = "Invalid value for the guess.";
-export const ERROR_INVOCATION_FAILED = "Failed to invocate Lambda function";
+export const ERROR_STATEMACHINE_EXECUTION_FAILED = "Failed to execute statemachine";
+export const ERROR_COULD_NOT_UPDATE_SCORE = "Failed to update user score";

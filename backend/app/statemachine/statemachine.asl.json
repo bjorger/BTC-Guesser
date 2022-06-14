@@ -1,0 +1,15 @@
+{
+    "StartAt": "Wait",
+    "States": {
+        "Wait": {
+            "Type": "Wait",
+            "Seconds": 60,
+            "Next": "Call function"
+        },
+        "Call function": {
+            "Type": "Task",
+            "Resource": "arn:aws:lambda:us-east-1:481543764669:function:evaluateGuessFunction",
+            "End": true
+        }
+    }
+}
