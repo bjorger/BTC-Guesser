@@ -4,7 +4,14 @@ import { UserRepository } from "./userRepository";
 import * as bcrypt from "bcrypt";
 import { LoginResponse, UserResponse } from "./userResponse";
 import { sign, verify } from "jsonwebtoken";
-import { ERROR_COULD_NOT_CREATE_USER, ERROR_INVALID_JWT, ERROR_PASSWORDS_DO_NOT_MATCH, ERROR_USER_NOT_FOUND } from "../errors";
+import {
+    ERROR_COULD_NOT_CREATE_USER,
+    ERROR_INVALID_JWT,
+    ERROR_PASSWORDS_DO_NOT_MATCH,
+    ERROR_PASSWORD_TOO_SHORT,
+    ERROR_USERNAME_TOO_SHORT,
+    ERROR_USER_NOT_FOUND,
+} from "../errors";
 
 export class UserDynamoClientRepository implements UserRepository {
     docClient: DynamoDB.DocumentClient;
@@ -16,6 +23,14 @@ export class UserDynamoClientRepository implements UserRepository {
     }
 
     async createUser(username: string, password: string): Promise<UserResponse> {
+        if (username.length < 6) {
+            throw new Error(ERROR_USERNAME_TOO_SHORT);
+        }
+
+        if (password.length < 6) {
+            throw new Error(ERROR_PASSWORD_TOO_SHORT);
+        }
+
         const salt = await bcrypt.genSalt(6);
         const hashed = await bcrypt.hash(password, salt);
 
