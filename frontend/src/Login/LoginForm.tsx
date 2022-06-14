@@ -1,4 +1,5 @@
 import { Button } from "@mui/material";
+import { useAppDispatch } from "app/hooks";
 import FormController from "common/FormController";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -7,6 +8,9 @@ import { FormData } from "./RegisterForm";
 
 const LoginForm: React.FC = () => {
     const AWSEndpoint = process.env.REACT_APP_AWS_ENDPOINT || "";
+
+    const dispatch = useAppDispatch();
+    //dispatch(decrement()
 
     const { control, handleSubmit } = useForm<FormData>();
 
@@ -31,7 +35,7 @@ const LoginForm: React.FC = () => {
                 name="username"
                 control={control}
                 label="Username"
-                helperText="Must be atleast 7 characters long"
+                helperText="Username must be atleast 7 characters long"
                 required
                 minLength={7}
             />
@@ -40,7 +44,7 @@ const LoginForm: React.FC = () => {
                 control={control}
                 label="Password"
                 type="password"
-                helperText="Must be atleast 7 characters long"
+                helperText="Password must be atleast 7 characters long"
                 required
                 minLength={7}
             />

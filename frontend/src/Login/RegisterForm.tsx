@@ -63,7 +63,7 @@ const RegisterForm: React.FC = () => {
                     name="username"
                     control={control}
                     label="Username"
-                    helperText="Must be atleast 7 characters long"
+                    helperText="Username must be atleast 7 characters long"
                     required
                     minLength={7}
                 />
@@ -72,7 +72,7 @@ const RegisterForm: React.FC = () => {
                     control={control}
                     label="Password"
                     type="password"
-                    helperText="Must be atleast 7 characters long"
+                    helperText="Password must be atleast 7 characters long"
                     required
                     minLength={7}
                 />
@@ -87,7 +87,7 @@ const RegisterForm: React.FC = () => {
                             label="Confirm Password"
                             variant="filled"
                             value={value?.replace(" ", "")}
-                            helperText={passwordError ? "Passwords must be equal" : ""}
+                            helperText={passwordError ? "Passwords must be equal" : " "}
                             error={passwordError}
                             onChange={onChange}
                         />
