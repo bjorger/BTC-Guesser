@@ -22,7 +22,7 @@ export class UserDynamoClientRepository implements UserRepository {
         this.docClient = new DynamoDB.DocumentClient();
     }
 
-    async createUser(username: string, password: string): Promise<UserResponse> {
+    async createUser(username: string, password: string): Promise<void> {
         if (username.length < 6) {
             throw new Error(ERROR_USERNAME_TOO_SHORT);
         }
@@ -44,14 +44,6 @@ export class UserDynamoClientRepository implements UserRepository {
 
         try {
             await this.docClient.put(params).promise();
-
-            const { username, state, score } = user;
-
-            return {
-                username,
-                state,
-                score,
-            };
         } catch (error) {
             throw new Error(ERROR_COULD_NOT_CREATE_USER);
         }

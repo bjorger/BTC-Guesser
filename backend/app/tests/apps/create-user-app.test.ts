@@ -5,7 +5,7 @@ import chaiAsPromised from "chai-as-promised";
 import { Mock, Times } from "moq.ts";
 import { ApiGatewayResponse } from "../../src/common/apigateway/apigateway-response";
 import { ApiGatewayEventMock } from "../mocks/apigateway-event-mock";
-import { UserState, UserResponse, UserRepository, UserDynamoClientRepository } from "../../src/common/user";
+import { UserRepository, UserDynamoClientRepository } from "../../src/common/user";
 import { CreateUserApp } from "../../src/apps/create-user-app";
 import { ERROR_PASSWORD_TOO_SHORT, ERROR_USERNAME_TOO_SHORT } from "../../src/common/errors";
 import { DynamoDB } from "aws-sdk";
@@ -17,12 +17,8 @@ describe("UserCreate instance", () => {
     const repoMock = new Mock<UserRepository>()
         .setup((instance) => instance.createUser("Robin_Braumann", "Hallo123"))
         .returns(
-            new Promise<UserResponse>((resolve) => {
-                resolve({
-                    username: "Robin_Braumann",
-                    state: UserState.CAN_GUESS,
-                    score: 0,
-                });
+            new Promise<void>((resolve) => {
+                resolve();
             }),
         );
 
@@ -68,12 +64,7 @@ describe("UserCreate instance", () => {
             const response: ApiGatewayResponse = await app.run(event);
 
             repoMock.verify((instance) => instance.createUser("Robin_Braumann", "Hallo123"), Times.Once());
-            if (!response.body) {
-                expect.fail("expected a response body to be present");
-            }
-
-            const res: UserResponse = JSON.parse(response.body) as UserResponse;
-            expect(res.username).to.equal("Robin_Braumann");
+            expect(response).to.have.property("statusCode");
         });
 
         it("App returns error code 500 when username is too short", async () => {

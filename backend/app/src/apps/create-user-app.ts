@@ -40,8 +40,8 @@ export class CreateUserApp implements LambdaApp {
         }
 
         try {
-            const result = await this.repository.createUser(_username, _password);
-            return { statusCode: 201, body: JSON.stringify(result) };
+            await this.repository.createUser(_username, _password);
+            return { statusCode: 201 };
         } catch (err) {
             return { statusCode: 500, body: err.message };
         }
