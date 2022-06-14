@@ -1,3 +1,5 @@
+import { v4 as uuid4 } from "uuid";
+
 export class Guess {
     id: string;
     username: string;
@@ -5,10 +7,10 @@ export class Guess {
     guess: GuessOptions;
     createdAt: string;
 
-    constructor(id: string, username: string, btcPrice: string, guess: GuessOptions) {
-        this.id = id;
+    constructor(username: string, btcPrice: number, guess: GuessOptions) {
+        this.id = uuid4();
         this.username = username;
-        this.btcPrice = +btcPrice;
+        this.btcPrice = btcPrice;
         this.guess = guess;
         this.createdAt = new Date().toISOString();
     }

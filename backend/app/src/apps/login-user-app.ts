@@ -3,7 +3,13 @@ import { ApiGatewayResponse } from "../common/apigateway/apigateway-response";
 
 import { LambdaApp } from "./lambda-app";
 import { UserRepository } from "../common/user/userRepository";
-import { ERROR_INVALID_JWT, ERROR_PASSWORDS_DO_NOT_MATCH, ERROR_USER_NOT_FOUND } from "../common/errors";
+import {
+    ERROR_BODY_MISSING_PASSWORD,
+    ERROR_BODY_MISSING_USERNAME,
+    ERROR_INVALID_JWT,
+    ERROR_PASSWORDS_DO_NOT_MATCH,
+    ERROR_USER_NOT_FOUND,
+} from "../common/errors";
 
 export class LoginUserApp implements LambdaApp {
     repository: UserRepository;
@@ -37,9 +43,9 @@ export class LoginUserApp implements LambdaApp {
             const { username, password } = JSON.parse(event.body);
 
             if (!username) {
-                return { statusCode: 422, body: "Body is missing the username" };
+                return { statusCode: 422, body: ERROR_BODY_MISSING_USERNAME };
             } else if (!password) {
-                return { statusCode: 422, body: "Body is missing the password" };
+                return { statusCode: 422, body: ERROR_BODY_MISSING_PASSWORD };
             }
             _username = username;
             _password = password;

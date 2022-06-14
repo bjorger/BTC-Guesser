@@ -15,7 +15,6 @@ import {
 } from "../errors";
 import { Bitcoin } from "../bitcoin";
 import axios from "axios";
-import { v4 as uuid4 } from "uuid";
 import { GuessRepository } from "./guessRepository";
 import { GuessResponse } from "./guessResponse";
 
@@ -68,7 +67,7 @@ export class GuessDynamoClientRepository implements GuessRepository {
 
         const btcPrice = await this.getBTCPrice();
 
-        const guessObject = new Guess(uuid4(), username, btcPrice, guess);
+        const guessObject = new Guess(username, +btcPrice, guess);
         const params: DynamoDB.DocumentClient.PutItemInput = {
             TableName: this.guessTable,
             Item: guessObject,
@@ -133,7 +132,7 @@ export class GuessDynamoClientRepository implements GuessRepository {
         return btcPrice;
     }
 
-    async evaluateGuess(username: string, guessId: string): Promise<void> {
+    async evaluateGuess(username: string, guessId: string): Promise<number> {
         const btcPrice = +(await this.getBTCPrice());
         const params: DynamoDB.DocumentClient.GetItemInput = {
             TableName: this.guessTable,
@@ -151,11 +150,7 @@ export class GuessDynamoClientRepository implements GuessRepository {
             }
             const guess = result.Item as Guess;
 
-            if ((btcPrice > guess.btcPrice && guess.guess === GuessOptions.UP) || (btcPrice < guess.btcPrice && guess.guess === GuessOptions.DOWN)) {
-                guessResult = 1;
-            } else {
-                guessResult = -1;
-            }
+            guessResult = this.evaluate(btcPrice, guess);
         } catch (error) {
             console.error(error);
             throw new Error(ERROR_NO_GUESSES_FROM_USER);
@@ -173,14 +168,27 @@ export class GuessDynamoClientRepository implements GuessRepository {
                 },
                 ExpressionAttributeValues: {
                     ":guess_result": guessResult,
-                    ":new_state": UserState.CAN_GUESS
+                    ":new_state": UserState.CAN_GUESS,
                 },
             };
 
             await this.docClient.update(updateUserParams).promise();
+
+            return guessResult;
         } catch (error) {
             console.error(error.message);
             throw new Error(ERROR_COULD_NOT_UPDATE_SCORE);
         }
+    }
+
+    evaluate(btcPrice: number, guess: Guess): number {
+        let guessResult = 0;
+        if ((btcPrice > guess.btcPrice && guess.guess === GuessOptions.UP) || (btcPrice < guess.btcPrice && guess.guess === GuessOptions.DOWN)) {
+            guessResult = 1;
+        } else {
+            guessResult = -1;
+        }
+
+        return guessResult;
     }
 }

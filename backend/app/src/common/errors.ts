@@ -11,3 +11,6 @@ export const ERROR_NO_GUESSES_FROM_USER = "User has not made any guesses yet";
 export const ERROR_INVALID_GUESS_OPTIONS = "Invalid value for the guess.";
 export const ERROR_STATEMACHINE_EXECUTION_FAILED = "Failed to execute statemachine";
 export const ERROR_COULD_NOT_UPDATE_SCORE = "Failed to update user score";
+export const ERROR_BODY_MISSING_USERNAME = "Body is missing the username";
+export const ERROR_BODY_MISSING_PASSWORD = "Body is missing the password";
+export const ERROR_BODY_MISSING_GUESS_ID = "Body is missing the guessId";

@@ -2,6 +2,7 @@ import { ApiGatewayResponse } from "../common/apigateway/apigateway-response";
 import { GuessRepository } from "../common/guess";
 import { ApiGatewayInvokeEvent } from "../common/apigateway/apigateway-invoke-event";
 import { InvokedLambdaApp } from "./invoked-lambda-app";
+import { ERROR_BODY_MISSING_GUESS_ID, ERROR_BODY_MISSING_USERNAME } from "../common/errors";
 
 export class EvaluateGuessApp implements InvokedLambdaApp {
     repository: GuessRepository;
@@ -11,17 +12,15 @@ export class EvaluateGuessApp implements InvokedLambdaApp {
     }
 
     async run(event: ApiGatewayInvokeEvent): Promise<ApiGatewayResponse> {
-        console.log("TEST");
-        console.log(event);
         try {
             const { username, guessId } = event;
 
             if (!username) {
-                throw new Error("Body is missing the username");
+                throw new Error(ERROR_BODY_MISSING_USERNAME);
             }
 
             if (!guessId) {
-                throw new Error("Body is missing the guessId");
+                throw new Error(ERROR_BODY_MISSING_GUESS_ID);
             }
 
             await this.repository.evaluateGuess(username, guessId);
