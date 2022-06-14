@@ -7,7 +7,9 @@ interface Breakpoints {
     xl: number;
 }
 
-interface Palette {}
+interface Palette {
+    white: string;
+}
 
 interface Fonts {}
 
@@ -26,7 +28,9 @@ const breakpoints: Breakpoints = {
 
 const theme: Theme = {
     breakpoints,
-    palette: {},
+    palette: {
+        white: "#FFFFFF",
+    },
     fonts: {},
 };
 
