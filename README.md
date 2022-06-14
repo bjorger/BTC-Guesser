@@ -22,7 +22,7 @@ The following constraints are active for creating a user:
 # Backend
 
 The backend is completely serverless and has been implemented using AWS lambda functions and step functions.
-The stack consists as follow:
+The stack consists as follows:
 
 -   AWS lambda
 -   AWS step function
@@ -30,3 +30,17 @@ The stack consists as follow:
 -   TypeScript 4
 -   bcrypt
 -   jsonwebtoken
+-   SAM (Serverless Application Model)
+-   Mocha
+-   Istanbulc
+
+# Frontend
+
+The frontend is a simple React Application with Typescript.
+The stack consists as follows:
+
+-   ReactTS
+-   Typescript 4
+-   StyledComponents
+-   Material UI
+-   Redux

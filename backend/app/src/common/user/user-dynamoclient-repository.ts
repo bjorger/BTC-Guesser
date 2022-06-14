@@ -52,7 +52,7 @@ export class UserDynamoClientRepository implements UserRepository {
                 state,
                 score,
             };
-        } catch {
+        } catch (error) {
             throw new Error(ERROR_COULD_NOT_CREATE_USER);
         }
     }

@@ -10,7 +10,7 @@ import { ApiGatewayEventMock } from "../mocks/apigateway-event-mock";
 describe("UserLogin instance", () => {
     const JWT =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJqb3JnemVuIiwiaWF0IjoxNjU1MTIzNDcxfQ.9f0Up7S_glz_6xL7U717D30Ck-37LiE9hloKK2nuXQI";
-        
+
     const repoMock = new Mock<UserRepository>()
         .setup((instance) => instance.loginUser("Robin_Braumann", "Hallo123"))
         .returns(
