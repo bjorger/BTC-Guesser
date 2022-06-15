@@ -153,6 +153,7 @@ const Content = styled.div`
 
 const UserHint = styled.p`
     text-align: center;
+    padding: 20px;
 `;
 
 const ButtonContainer = styled.div`
