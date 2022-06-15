@@ -32,7 +32,7 @@ The stack consists as follows:
 -   jsonwebtoken
 -   SAM (Serverless Application Model)
 -   Mocha
--   Istanbulc
+-   Istanbul
 
 # Frontend
 
@@ -44,3 +44,4 @@ The stack consists as follows:
 -   StyledComponents
 -   Material UI
 -   Redux
+-   GitHub Pages for hosting
