@@ -165,8 +165,7 @@ const ButtonContainer = styled.div`
 
 const GuessButton = styled(Button)`
     margin: 10px 0 !important;
-    width: 90%;import { USER_HINT_START, USER_HINT_GUESS_SUCCESS } from '../common/globals';
-
+    width: 90%;
 `;
 
 const BitcoinPrice = styled.h1`
