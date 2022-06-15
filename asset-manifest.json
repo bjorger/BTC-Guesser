@@ -1,12 +1,12 @@
 {
   "files": {
-    "main.js": "/BTC-Guesser/static/js/main.b51d24f9.js",
+    "main.js": "/BTC-Guesser/static/js/main.e47cce71.js",
     "static/js/787.cda612ba.chunk.js": "/BTC-Guesser/static/js/787.cda612ba.chunk.js",
     "index.html": "/BTC-Guesser/index.html",
-    "main.b51d24f9.js.map": "/BTC-Guesser/static/js/main.b51d24f9.js.map",
+    "main.e47cce71.js.map": "/BTC-Guesser/static/js/main.e47cce71.js.map",
     "787.cda612ba.chunk.js.map": "/BTC-Guesser/static/js/787.cda612ba.chunk.js.map"
   },
   "entrypoints": [
-    "static/js/main.b51d24f9.js"
+    "static/js/main.e47cce71.js"
   ]
 }
