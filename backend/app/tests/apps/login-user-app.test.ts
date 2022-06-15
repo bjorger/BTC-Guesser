@@ -3,13 +3,19 @@ import "mocha";
 import { Mock } from "moq.ts";
 import { LoginUserApp } from "../../src/apps/login-user-app";
 import { ApiGatewayResponse } from "../../src/common/apigateway/apigateway-response";
-import { UserRepository } from "../../src/common/user";
-import { LoginResponse } from "../../src/common/user/userResponse";
+import { UserRepository, UserState } from "../../src/common/user";
+import { UserResponse, LoginResponse } from "../../src/common/user/userResponse";
 import { ApiGatewayEventMock } from "../mocks/apigateway-event-mock";
 
 describe("UserLogin instance", () => {
     const JWT =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJqb3JnemVuIiwiaWF0IjoxNjU1MTIzNDcxfQ.9f0Up7S_glz_6xL7U717D30Ck-37LiE9hloKK2nuXQI";
+
+    const user = {
+        username: "bjorgzen",
+        score: 0,
+        state: UserState.CAN_GUESS,
+    };
 
     const repoMock = new Mock<UserRepository>()
         .setup((instance) => instance.loginUser("Robin_Braumann", "Hallo123"))
@@ -17,6 +23,7 @@ describe("UserLogin instance", () => {
             new Promise<LoginResponse>((resolve) => {
                 resolve({
                     JWT,
+                    user,
                 });
             }),
         );
@@ -55,13 +62,15 @@ describe("UserLogin instance", () => {
             expect(response.statusCode).to.equal(201);
         });
 
-        it("Logging with JWT returns 201 and JWT", async () => {
+        it("Logging with JWT returns 201 and and a user", async () => {
             const jwtRepoMock = new Mock<UserRepository>()
                 .setup((instance) => instance.loginUserWithJWT(JWT))
                 .returns(
-                    new Promise<LoginResponse>((resolve) => {
+                    new Promise<UserResponse>((resolve) => {
                         resolve({
-                            JWT,
+                            username: "bjorgzen",
+                            score: 0,
+                            state: UserState.CAN_GUESS,
                         });
                     }),
                 );
@@ -78,7 +87,13 @@ describe("UserLogin instance", () => {
 
             expect(response).to.have.property("body");
             expect(response).to.have.property("statusCode");
-            expect(response.body).to.equal(JSON.stringify({ JWT }));
+            expect(response.body).to.equal(
+                JSON.stringify({
+                    username: "bjorgzen",
+                    score: 0,
+                    state: UserState.CAN_GUESS,
+                }),
+            );
             expect(response.statusCode).to.equal(201);
         });
     });

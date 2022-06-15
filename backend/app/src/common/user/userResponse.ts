@@ -8,4 +8,5 @@ export interface UserResponse {
 
 export interface LoginResponse {
     JWT: string;
+    user: UserResponse;
 }

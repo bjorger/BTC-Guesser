@@ -3,7 +3,7 @@ import { User } from "./user";
 import { UserRepository } from "./userRepository";
 import * as bcrypt from "bcrypt";
 import { LoginResponse, UserResponse } from "./userResponse";
-import { sign, verify } from "jsonwebtoken";
+import { JwtPayload, sign, verify } from "jsonwebtoken";
 import {
     ERROR_COULD_NOT_CREATE_USER,
     ERROR_INVALID_JWT,
@@ -75,14 +75,23 @@ export class UserDynamoClientRepository implements UserRepository {
 
         const JWT = sign(payload, this.secret);
 
-        return { JWT };
+        return {
+            JWT,
+            user: {
+                username: user.username,
+                state: user.state,
+                score: user.score,
+            },
+        };
     }
 
-    async loginUserWithJWT(JWT: string): Promise<LoginResponse> {
+    async loginUserWithJWT(JWT: string): Promise<UserResponse> {
         try {
-            verify(JWT, this.secret);
+            const { username } = verify(JWT, this.secret) as JwtPayload;
 
-            return { JWT };
+            const user = await this.getUserByUsername(username);
+
+            return user;
         } catch {
             throw new Error(ERROR_INVALID_JWT);
         }
