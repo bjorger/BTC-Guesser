@@ -1,16 +1,15 @@
-import { Alert, Button, Snackbar } from "@mui/material";
-import { useAppDispatch } from "app/hooks";
-import { FormController } from "common";
 import React from "react";
+import { Button } from "@mui/material";
+import { useAppDispatch } from "app/hooks";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import { FormData } from "./registerForm";
 import { useCookies } from "react-cookie";
-import { setJWT, setLoggedIn } from "features/user/userSlice";
+import { setUser, User } from "features/user/userSlice";
+import Notification from "common/notification";
+import { AWSEndpoint, JWTCookieName, FormController } from "common";
 
 const LoginForm: React.FC = () => {
-    const AWSEndpoint = process.env["REACT_APP_AWS_ENDPOINT"] || "";
-    const JWTCookieName = process.env["REACT_APP_JWT_COOKIE_NAME"] || "";
     const url = `${AWSEndpoint}/login-user`;
 
     const dispatch = useAppDispatch();
@@ -19,32 +18,46 @@ const LoginForm: React.FC = () => {
 
     const [openSuccess, setOpenSuccess] = React.useState<boolean>(false);
     const [openError, setOpenError] = React.useState<boolean>(false);
+    const [openLogin, setOpenLogin] = React.useState<boolean>(false);
     const [disableButton, setDisableButton] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         (async () => {
-            if (JWTCookieName in cookies) {
+            if (!(JWTCookieName in cookies)) {
+                return;
+            }
+
+            setOpenLogin(true);
+
+            try {
+                setDisableButton(true);
                 const JWT = cookies[JWTCookieName];
 
-                try {
-                    setDisableButton(true);
-                    const response = await fetch(url, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json", Authorization: `Bearer ${JWT}` },
-                    });
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${JWT}` },
+                });
 
-                    if (response.status === 201) {
-                        const { JWT } = await response.json();
-                        setCookie(JWTCookieName, JWT);
-                        dispatch(setJWT(JWT));
-                        dispatch(setLoggedIn(true));
-                        setOpenSuccess(true);
-                    }
-                } catch (error) {
-                    console.error(error);
-                } finally {
-                    setDisableButton(false);
+                if (response.status === 201) {
+                    const { username, state, score } = await response.json();
+
+                    const user: User = {
+                        username,
+                        state,
+                        score,
+                        JWT,
+                        isLoggedIn: true,
+                    };
+
+                    setCookie(JWTCookieName, JWT);
+                    dispatch(setUser(user));
+                    setOpenSuccess(true);
                 }
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setDisableButton(false);
+                setOpenLogin(false);
             }
         })();
     }, []);
@@ -59,10 +72,15 @@ const LoginForm: React.FC = () => {
             });
 
             if (response.status === 201) {
-                const { JWT } = await response.json();
+                const { JWT, user } = await response.json();
+                console.log(user);
+                const userState: User = {
+                    ...user,
+                    JWT,
+                    isLoggedIn: true,
+                };
                 setCookie(JWTCookieName, JWT);
-                dispatch(setJWT(JWT));
-                dispatch(setLoggedIn(true));
+                dispatch(setUser(userState));
                 setOpenSuccess(true);
             } else {
                 setOpenError(true);
@@ -98,16 +116,9 @@ const LoginForm: React.FC = () => {
                     Login
                 </Button>
             </Form>
-            <Snackbar open={openSuccess} autoHideDuration={6000}>
-                <Alert onClose={() => setOpenSuccess(false)} severity="success" sx={{ width: "100%" }}>
-                    Successfully logged in! :)
-                </Alert>
-            </Snackbar>
-            <Snackbar open={openError} autoHideDuration={6000}>
-                <Alert onClose={() => setOpenError(false)} severity="error" sx={{ width: "100%" }}>
-                    Oops! Something went wrong! :(
-                </Alert>
-            </Snackbar>
+            <Notification open={openSuccess} setOpen={setOpenSuccess} message="Successfully logged in! :)" severity="success" />
+            <Notification open={openError} setOpen={setOpenError} message="Oops! Something went wrong! :(" severity="error" />
+            <Notification open={openLogin} setOpen={setOpenLogin} message="Logging you in..." severity="info" />
         </>
     );
 };

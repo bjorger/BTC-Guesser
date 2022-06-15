@@ -36,13 +36,14 @@ const Container = styled.div`
 
 interface LayoutBoxProps {
     placeSelf: "start" | "center";
+    minHeight?: string;
 }
 
 export const LayoutBox = styled(Box)<LayoutBoxProps>`
     width: 100%;
     grid-column: 3 / span 20;
     place-self: ${({ placeSelf }) => placeSelf};
-    min-height: 350px;
+    min-height: ${({ minHeight }) => (minHeight ? minHeight : "350px")};
     border-radius: 10px;
     ${({ theme }) => theme.boxShadow};
     background: ${({ theme }) => theme.palette.white};

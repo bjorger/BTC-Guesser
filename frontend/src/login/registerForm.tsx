@@ -1,6 +1,6 @@
 import React from "react";
-import { Alert, Button, Snackbar } from "@mui/material";
-import FormController, { CustomTextField } from "common/formController";
+import { Button } from "@mui/material";
+import { FormController, CustomTextField, Notification } from "common";
 import { Controller, useForm } from "react-hook-form";
 import styled from "styled-components";
 
@@ -36,14 +36,12 @@ const RegisterForm: React.FC = () => {
             });
 
             if (response.status === 201) {
-                const user = await response.json();
-                console.log(user);
-
                 reset({
                     username: "",
                     password: "",
                     confirmPassword: "",
                 });
+
                 setOpenSuccess(true);
             } else {
                 setOpenError(true);
@@ -96,16 +94,8 @@ const RegisterForm: React.FC = () => {
                     Register
                 </Button>
             </Form>
-            <Snackbar open={openSuccess} autoHideDuration={6000}>
-                <Alert onClose={() => setOpenSuccess(false)} severity="success" sx={{ width: "100%" }}>
-                    Successfully created Account!
-                </Alert>
-            </Snackbar>
-            <Snackbar open={openError} autoHideDuration={6000}>
-                <Alert onClose={() => setOpenError(false)} severity="error" sx={{ width: "100%" }}>
-                    Error while creating Account!
-                </Alert>
-            </Snackbar>
+            <Notification open={openSuccess} setOpen={setOpenSuccess} message="Successfully created Account!" severity="success" />
+            <Notification open={openError} setOpen={setOpenError} message="Error while creating Account!" severity="error" />
         </>
     );
 };
