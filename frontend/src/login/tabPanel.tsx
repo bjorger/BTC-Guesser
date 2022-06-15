@@ -1,5 +1,4 @@
 import * as React from "react";
-import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 
 interface TabPanelProps {
@@ -8,7 +7,7 @@ interface TabPanelProps {
     value: number;
 }
 
-export const TabPanel = (props: TabPanelProps) => {
+const TabPanel = (props: TabPanelProps) => {
     const { children, value, index, ...other } = props;
 
     return (
@@ -17,6 +16,8 @@ export const TabPanel = (props: TabPanelProps) => {
         </div>
     );
 };
+
+export default TabPanel;
 
 export const a11yProps = (index: number) => {
     return {

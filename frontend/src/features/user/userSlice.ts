@@ -10,12 +10,16 @@ export interface User {
     username: string;
     score: number;
     state: UserState;
+    JWT: string;
+    isLoggedIn: boolean;
 }
 
 const initialState: User = {
     username: "",
     score: 0,
     state: UserState.CAN_GUESS,
+    JWT: "",
+    isLoggedIn: false,
 };
 
 export const userSlice = createSlice({
@@ -32,10 +36,16 @@ export const userSlice = createSlice({
         setState: (state, action: PayloadAction<UserState>) => {
             state.state = action.payload;
         },
+        setJWT: (state, action: PayloadAction<string>) => {
+            state.JWT = action.payload;
+        },
+        setLoggedIn: (state, action: PayloadAction<boolean>) => {
+            state.isLoggedIn = action.payload;
+        },
     },
 });
 
-export const { setUser, setScore, setState } = userSlice.actions;
+export const { setUser, setScore, setState, setJWT, setLoggedIn } = userSlice.actions;
 
 export const selectUser = (state: RootState) => state;
 

@@ -1,10 +1,10 @@
 import { Box, Tab, Tabs } from "@mui/material";
 import React from "react";
 import styled from "styled-components";
-import Layout from "common/Layout";
-import { a11yProps, TabPanel } from "./TabPanel";
-import LoginForm from "./LoginForm";
-import RegisterForm from "./RegisterForm";
+import { Layout } from "common";
+import TabPanel, { a11yProps } from "./tabPanel";
+import LoginForm from "./loginForm";
+import RegisterForm from "./registerForm";
 
 export interface FormData {
     username: string;
@@ -12,7 +12,7 @@ export interface FormData {
     confirmPassword?: string;
 }
 
-export default function Login() {
+const Login: React.FC = () => {
     const [tab, setTab] = React.useState(0);
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -20,7 +20,7 @@ export default function Login() {
     };
 
     return (
-        <Layout>
+        <Layout fullScreen={true}>
             <LoginBox>
                 <TabsContainer sx={{ borderBottom: 1, borderColor: "divider" }}>
                     <Tabs value={tab} onChange={handleChange} aria-label="basic tabs example">
@@ -37,7 +37,9 @@ export default function Login() {
             </LoginBox>
         </Layout>
     );
-}
+};
+
+export default Login;
 
 const LoginBox = styled(Box)`
     width: 100%;

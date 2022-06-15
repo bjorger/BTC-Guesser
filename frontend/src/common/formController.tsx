@@ -2,7 +2,7 @@ import React from "react";
 import { TextField } from "@mui/material";
 import { Control, Controller } from "react-hook-form";
 import styled from "styled-components";
-import { FormData } from "Login/Login";
+import { FormData } from "login";
 
 interface FormControllerProps {
     name: "password" | "username" | "confirmPassword";

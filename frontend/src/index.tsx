@@ -3,19 +3,25 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { store } from "./app/store";
 import reportWebVitals from "./reportWebVitals";
-import "./index.css";
-import { ThemeProvider } from "styled-components";
+import { ThemeProvider, createGlobalStyle } from "styled-components";
 import theme from "./theme";
-import Login from "./Login/Login";
+import App from "App";
 
 const container = document.getElementById("root")!;
 const root = createRoot(container);
 
+const GlobalStyle = createGlobalStyle`
+  body {
+    margin: 0;
+  }
+`;
+
 root.render(
     <React.StrictMode>
+        <GlobalStyle />
         <Provider store={store}>
             <ThemeProvider theme={theme}>
-                <Login />
+                <App />
             </ThemeProvider>
         </Provider>
     </React.StrictMode>,

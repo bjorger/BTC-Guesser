@@ -1,6 +1,6 @@
 import React from "react";
 import { Alert, Button, Snackbar } from "@mui/material";
-import FormController, { CustomTextField } from "common/FormController";
+import FormController, { CustomTextField } from "common/formController";
 import { Controller, useForm } from "react-hook-form";
 import styled from "styled-components";
 
@@ -46,7 +46,6 @@ const RegisterForm: React.FC = () => {
                 });
                 setOpenSuccess(true);
             } else {
-                console.log("error");
                 setOpenError(true);
             }
         } catch (error) {

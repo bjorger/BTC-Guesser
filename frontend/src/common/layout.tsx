@@ -2,19 +2,24 @@ import React from "react";
 import styled from "styled-components";
 
 interface LayoutProps {
+    fullScreen?: boolean;
     children?: React.ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
-    return <Container>{children}</Container>;
+const Layout: React.FC<LayoutProps> = ({ children, fullScreen = false }) => {
+    return <Container fullScreen={fullScreen}>{children}</Container>;
 };
 
 export default Layout;
 
-const Container = styled.div`
+interface ContainerProps {
+    fullScreen: boolean;
+}
+
+const Container = styled.div<ContainerProps>`
     display: grid;
     grid-template-columns: repeat(24, 1fr);
-    min-height: 100vh;
+    min-height: ${({ fullScreen }) => (fullScreen ? "100vh" : "")};
 
     background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
     background-size: 400% 400%;
