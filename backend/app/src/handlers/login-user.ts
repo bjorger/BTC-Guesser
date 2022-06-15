@@ -12,7 +12,7 @@ export const handler = async (event: ApiGatewayEvent): Promise<ApiGatewayRespons
     const app: LambdaApp = new LoginUserApp(repository);
 
     console.log("Running the LoginUserApp");
-    const response = await app.run(event);
+    const response =  await app.run(event);
 
-    return { ...response, headers };
+    return {...response, headers }
 };

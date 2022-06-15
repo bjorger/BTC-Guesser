@@ -7,6 +7,7 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: >-
     sam-app
 
+
 # Transform section specifies one or more macros that AWS CloudFormation uses to process your template
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
 Transform:
@@ -16,7 +17,7 @@ Globals:
     Api:
         Cors:
             AllowMethods: "'GET,POST,OPTIONS'"
-            AllowHeaders: "'content-type'"
+            AllowHeaders: "'*'"
             AllowOrigin: "'*'"
 
 # Resources declares the AWS resources that you want to include in the stack
