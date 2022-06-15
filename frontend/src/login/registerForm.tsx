@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@mui/material";
-import { FormController, CustomTextField, Notification } from "common";
+import { FormController, CustomTextField, Notification, ERROR_COULD_NOT_CREATE_ACCOUNT } from "common";
 import { Controller, useForm } from "react-hook-form";
 import styled from "styled-components";
 
@@ -19,6 +19,7 @@ const RegisterForm: React.FC = () => {
     const [openSuccess, setOpenSuccess] = React.useState<boolean>(false);
     const [openError, setOpenError] = React.useState<boolean>(false);
     const [disableButton, setDisableButton] = React.useState<boolean>(false);
+    const [errorMessage, setErrorMessage] = React.useState<string>(ERROR_COULD_NOT_CREATE_ACCOUNT);
 
     const onRegister = handleSubmit(async (data: FormData) => {
         if (data.password !== data.confirmPassword) {
@@ -44,6 +45,10 @@ const RegisterForm: React.FC = () => {
 
                 setOpenSuccess(true);
             } else {
+                const errorText = await response.text();
+                if (errorText) {
+                    setErrorMessage(errorText);
+                }
                 setOpenError(true);
             }
         } catch (error) {
@@ -95,7 +100,7 @@ const RegisterForm: React.FC = () => {
                 </Button>
             </Form>
             <Notification open={openSuccess} setOpen={setOpenSuccess} message="Successfully created Account!" severity="success" />
-            <Notification open={openError} setOpen={setOpenError} message="Error while creating Account!" severity="error" />
+            <Notification open={openError} setOpen={setOpenError} message={errorMessage} severity="error" />
         </>
     );
 };

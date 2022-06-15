@@ -1,5 +1,14 @@
 import React from "react";
-import { Bitcoin, Layout, LayoutBox, USER_HINT_GUESSING, USER_HINT_GUESS_FAILURE, USER_HINT_GUESS_SUCCESS, USER_HINT_START } from "common";
+import {
+    Bitcoin,
+    Layout,
+    LayoutBox,
+    USER_HINT_PRICE_DID_NOT_CHANGE,
+    USER_HINT_GUESSING,
+    USER_HINT_GUESS_FAILURE,
+    USER_HINT_GUESS_SUCCESS,
+    USER_HINT_START,
+} from "common";
 import styled from "styled-components";
 import Header from "./header";
 import { Button } from "@mui/material";
@@ -37,6 +46,8 @@ const Home: React.FC = () => {
 
                         if (score > user.score) {
                             setUserHint(USER_HINT_GUESS_SUCCESS);
+                        } else if (score === user.score) {
+                            setUserHint(USER_HINT_PRICE_DID_NOT_CHANGE);
                         } else {
                             setUserHint(USER_HINT_GUESS_FAILURE);
                         }
@@ -61,7 +72,7 @@ const Home: React.FC = () => {
 
         if (response.status === 200) {
             const bitcoinPriceFromAPI = (await response.json()) as Bitcoin;
-            setBitcoinPrice(+bitcoinPriceFromAPI.market_data.current_price.eur);
+            setBitcoinPrice(+bitcoinPriceFromAPI.market_data.current_price.usd);
         }
     };
 
@@ -124,7 +135,7 @@ const Home: React.FC = () => {
             </LayoutBox>
             <LayoutBox placeSelf="start">
                 <Content>
-                    <BitcoinPrice>1 BTC = {bitcoinPrice}€</BitcoinPrice>
+                    <BitcoinPrice>1 BTC = {bitcoinPrice}$</BitcoinPrice>
                     <ButtonContainer>
                         <GuessButton variant="contained" disabled={disableButtons || user.state === 1} onClick={() => placeGuess(GuessOptions.UP)}>
                             Up

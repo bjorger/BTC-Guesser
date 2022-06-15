@@ -5,10 +5,10 @@ import * as bcrypt from "bcrypt";
 import { LoginResponse, UserResponse } from "./userResponse";
 import { JwtPayload, sign, verify } from "jsonwebtoken";
 import {
-    ERROR_COULD_NOT_CREATE_USER,
     ERROR_INVALID_JWT,
     ERROR_PASSWORDS_DO_NOT_MATCH,
     ERROR_PASSWORD_TOO_SHORT,
+    ERROR_USERNAME_ALREADY_TAKEN,
     ERROR_USERNAME_TOO_SHORT,
     ERROR_USER_NOT_FOUND,
 } from "../errors";
@@ -45,7 +45,7 @@ export class UserDynamoClientRepository implements UserRepository {
         try {
             await this.docClient.put(params).promise();
         } catch (error) {
-            throw new Error(ERROR_COULD_NOT_CREATE_USER);
+            throw new Error(ERROR_USERNAME_ALREADY_TAKEN);
         }
     }
 

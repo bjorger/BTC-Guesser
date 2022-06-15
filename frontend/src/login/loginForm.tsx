@@ -7,7 +7,7 @@ import { FormData } from "./registerForm";
 import { useCookies } from "react-cookie";
 import { setUser, User } from "features/user/userSlice";
 import Notification from "common/notification";
-import { AWSEndpoint, JWTCookieName, FormController } from "common";
+import { AWSEndpoint, JWTCookieName, FormController ,ERROR_COULD_NOT_LOG_USER_IN} from "common";
 
 const LoginForm: React.FC = () => {
     const url = `${AWSEndpoint}/login-user`;
@@ -20,6 +20,7 @@ const LoginForm: React.FC = () => {
     const [openError, setOpenError] = React.useState<boolean>(false);
     const [openLogin, setOpenLogin] = React.useState<boolean>(false);
     const [disableButton, setDisableButton] = React.useState<boolean>(false);
+    const [errorMessage, setErrorMessage] = React.useState<string>(ERROR_COULD_NOT_LOG_USER_IN);
 
     React.useEffect(() => {
         (async () => {
@@ -52,6 +53,12 @@ const LoginForm: React.FC = () => {
                     setCookie(JWTCookieName, JWT);
                     dispatch(setUser(user));
                     setOpenSuccess(true);
+                } else {
+                    const errorText = await response.text();
+                    if (errorText) {
+                        setErrorMessage(errorText);
+                    }
+                    setOpenError(true);
                 }
             } catch (error) {
                 console.error(error);
@@ -117,7 +124,7 @@ const LoginForm: React.FC = () => {
                 </Button>
             </Form>
             <Notification open={openSuccess} setOpen={setOpenSuccess} message="Successfully logged in! :)" severity="success" />
-            <Notification open={openError} setOpen={setOpenError} message="Oops! Something went wrong! :(" severity="error" />
+            <Notification open={openError} setOpen={setOpenError} message={errorMessage} severity="error" />
             <Notification open={openLogin} setOpen={setOpenLogin} message="Logging you in..." severity="info" />
         </>
     );

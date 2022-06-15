@@ -1,7 +1,7 @@
 export const ERROR_USER_NOT_FOUND = "Could not find User";
 export const ERROR_PASSWORDS_DO_NOT_MATCH = "Passwords do not match";
 export const ERROR_INVALID_JWT = "JWT is not valid";
-export const ERROR_COULD_NOT_CREATE_USER = "Could not create User";
+export const ERROR_USERNAME_ALREADY_TAKEN = "Username already taken";
 export const ERROR_COULD_NOT_CREATE_GUESS = "Could not create Guess";
 export const ERROR_JWT_MISSING = "No JWT in auth header found";
 export const ERROR_AUTH_HEADER_MISSING = "Authorization Header missing";

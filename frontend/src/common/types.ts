@@ -1,5 +1,5 @@
 export interface Bitcoin {
-    market_data: { current_price: { eur: string } };
+    market_data: { current_price: { usd: string } };
 }
 
 export enum GuessOptions {

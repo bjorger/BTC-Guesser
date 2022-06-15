@@ -1,4 +1,4 @@
-import { css, FlattenInterpolation, SimpleInterpolation, ThemeProps } from "styled-components/macro";
+import { css, SimpleInterpolation } from "styled-components/macro";
 
 interface Breakpoints {
     sm: number;

@@ -31,7 +31,7 @@ export class GuessDynamoClientRepository implements GuessRepository {
         this.stepFunctions = new StepFunctions();
     }
 
-    async placeGuess(JWT: string, guess: number): Promise<GuessResponse> {
+    async placeGuess(JWT: string, guess: GuessOptions): Promise<GuessResponse> {
         let username = "";
 
         try {
@@ -127,7 +127,7 @@ export class GuessDynamoClientRepository implements GuessRepository {
         }
 
         const bitcoin = response.data as Bitcoin;
-        const btcPrice = bitcoin.market_data.current_price.eur;
+        const btcPrice = bitcoin.market_data.current_price.usd;
 
         return btcPrice;
     }
@@ -183,6 +183,12 @@ export class GuessDynamoClientRepository implements GuessRepository {
 
     evaluate(btcPrice: number, guess: Guess): number {
         let guessResult = 0;
+
+        // if bitcoin price didnt change
+        if (btcPrice === guess.btcPrice) {
+            return 0;
+        }
+
         if ((btcPrice > guess.btcPrice && guess.guess === GuessOptions.UP) || (btcPrice < guess.btcPrice && guess.guess === GuessOptions.DOWN)) {
             guessResult = 1;
         } else {

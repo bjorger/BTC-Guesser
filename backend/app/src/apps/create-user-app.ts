@@ -35,7 +35,6 @@ export class CreateUserApp implements LambdaApp {
             _username = username;
             _password = password;
         } catch (err) {
-            console.log("Event body could not be parsed as JSON");
             return { statusCode: 400 };
         }
 
