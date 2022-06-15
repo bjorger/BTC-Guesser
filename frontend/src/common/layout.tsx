@@ -48,10 +48,11 @@ export const LayoutBox = styled(Box)<LayoutBoxProps>`
     ${({ theme }) => theme.boxShadow};
     background: ${({ theme }) => theme.palette.white};
     padding: 0px;
+    margin: 30px;
 
-    @media screen and (min-width: ${({ theme }) => `${theme.breakpoints.sm}px`}) {
+    @media screen and (min-width: ${({ theme }) => `${theme.breakpoints.md}px`}) {
         grid-column: 10 / span 6;
-        padding: 50px;
+        padding: 30px;
     }
 
     @media screen and (min-width: ${({ theme }) => `${theme.breakpoints.lg}px`}) {

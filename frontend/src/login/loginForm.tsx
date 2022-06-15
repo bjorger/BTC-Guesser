@@ -69,8 +69,6 @@ const LoginForm: React.FC = () => {
         })();
     }, []);
 
-    console.log(cookies);
-
     const onLogin = handleSubmit(async (data: FormData) => {
         try {
             setDisableButton(true);
