@@ -73,7 +73,7 @@ const LoginForm: React.FC = () => {
 
             if (response.status === 201) {
                 const { JWT, user } = await response.json();
-                console.log(user);
+
                 const userState: User = {
                     ...user,
                     JWT,
