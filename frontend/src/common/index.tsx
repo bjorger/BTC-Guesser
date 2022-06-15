@@ -1,5 +1,4 @@
 import FormController from "./formController";
-import Header from "./header";
-import Layout from "./layout";
+import Layout, { LayoutBox } from "./layout";
 
-export { FormController, Header, Layout };
+export { FormController, Layout, LayoutBox };

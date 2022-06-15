@@ -9,6 +9,7 @@ interface Breakpoints {
 
 interface Palette {
     white: string;
+    orange: string;
 }
 
 interface Fonts {}
@@ -17,6 +18,7 @@ interface Theme {
     breakpoints: Breakpoints;
     palette: Palette;
     fonts: Fonts;
+    boxShadow: SimpleInterpolation;
 }
 
 const breakpoints: Breakpoints = {
@@ -30,8 +32,12 @@ const theme: Theme = {
     breakpoints,
     palette: {
         white: "#FFFFFF",
+        orange: "#FF9900",
     },
     fonts: {},
+    boxShadow: css`
+        box-shadow: 5px 5px 12px -2px #000000;
+    `,
 };
 
 export default theme;

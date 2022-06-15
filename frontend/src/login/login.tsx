@@ -1,7 +1,7 @@
 import { Box, Tab, Tabs } from "@mui/material";
 import React from "react";
 import styled from "styled-components";
-import { Layout } from "common";
+import { Layout, LayoutBox } from "common";
 import TabPanel, { a11yProps } from "./tabPanel";
 import LoginForm from "./loginForm";
 import RegisterForm from "./registerForm";
@@ -20,8 +20,8 @@ const Login: React.FC = () => {
     };
 
     return (
-        <Layout fullScreen={true}>
-            <LoginBox>
+        <Layout>
+            <LayoutBox placeSelf="center">
                 <TabsContainer sx={{ borderBottom: 1, borderColor: "divider" }}>
                     <Tabs value={tab} onChange={handleChange} aria-label="basic tabs example">
                         <Tab label="Login" {...a11yProps(0)} />
@@ -34,32 +34,12 @@ const Login: React.FC = () => {
                 <TabPanel value={tab} index={1}>
                     <RegisterForm />
                 </TabPanel>
-            </LoginBox>
+            </LayoutBox>
         </Layout>
     );
 };
 
 export default Login;
-
-const LoginBox = styled(Box)`
-    width: 100%;
-    grid-column: 4 / span 18;
-    place-self: center;
-    min-height: 350px;
-    border-radius: 10px;
-    box-shadow: 5px 5px 12px -2px #000000;
-    background: ${({ theme }) => theme.palette.white};
-    padding: 20px;
-
-    @media screen and (min-width: ${({ theme }) => `${theme.breakpoints.sm}px`}) {
-        grid-column: 9 / span 7;
-        padding: 50px;
-    }
-
-    @media screen and (min-width: ${({ theme }) => `${theme.breakpoints.lg}px`}) {
-        grid-column: 10 / span 5;
-    }
-`;
 
 const TabsContainer = styled(Box)`
     display: flex;
