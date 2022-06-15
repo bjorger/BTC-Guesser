@@ -7,7 +7,7 @@ import { FormData } from "./registerForm";
 import { useCookies } from "react-cookie";
 import { setUser, User } from "features/user/userSlice";
 import Notification from "common/notification";
-import { AWSEndpoint, JWTCookieName, FormController ,ERROR_COULD_NOT_LOG_USER_IN} from "common";
+import { AWSEndpoint, JWTCookieName, FormController, ERROR_COULD_NOT_LOG_USER_IN } from "common";
 
 const LoginForm: React.FC = () => {
     const url = `${AWSEndpoint}/login-user`;
@@ -50,7 +50,7 @@ const LoginForm: React.FC = () => {
                         isLoggedIn: true,
                     };
 
-                    setCookie(JWTCookieName, JWT);
+                    setCookie(JWTCookieName, JWT, { path: "/", maxAge: 3600 });
                     dispatch(setUser(user));
                     setOpenSuccess(true);
                 } else {
@@ -69,6 +69,8 @@ const LoginForm: React.FC = () => {
         })();
     }, []);
 
+    console.log(cookies);
+
     const onLogin = handleSubmit(async (data: FormData) => {
         try {
             setDisableButton(true);
@@ -86,7 +88,7 @@ const LoginForm: React.FC = () => {
                     JWT,
                     isLoggedIn: true,
                 };
-                setCookie(JWTCookieName, JWT);
+                setCookie(JWTCookieName, JWT, { path: "/", maxAge: 3600 });
                 dispatch(setUser(userState));
                 setOpenSuccess(true);
             } else {
