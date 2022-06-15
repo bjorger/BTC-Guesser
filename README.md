@@ -1,3 +1,5 @@
+# Accessible under https://bjorger.github.io/BTC-Guesser/
+
 # Description
 
 This is a simple app, that lets the user guess on the trend of Bitcoin ($BTC). To realize that, the app is completely serverless using AWS lambda functions in combination with step functions.
