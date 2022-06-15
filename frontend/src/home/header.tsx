@@ -42,13 +42,17 @@ const Container = styled.div`
     grid-column: 1 / span 24;
     background: ${({ theme }) => theme.palette.white};
     ${({ theme }) => theme.boxShadow};
-    height: 100px;
+    height: 50px;
     box-shadow: 5px 5px 12px -2px #000000;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     padding: 10px 30px;
+
+    @media screen and (min-width: ${({ theme }) => `${theme.breakpoints.sm}px`}) {
+        height: 100px;
+    }
 `;
 
 const Logo = styled.div`
