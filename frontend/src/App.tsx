@@ -2,7 +2,7 @@ import { useAppSelector } from "app/hooks";
 import { Protected } from "common";
 import { Home } from "home";
 import { Login } from "login";
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import { HashRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 
 const App: React.FC = () => {
     const user = useAppSelector((state) => state.user);
