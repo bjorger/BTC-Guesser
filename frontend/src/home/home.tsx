@@ -8,6 +8,7 @@ import {
     USER_HINT_GUESS_FAILURE,
     USER_HINT_GUESS_SUCCESS,
     USER_HINT_START,
+    ERROR_SOMETHING_WENT_WRONG,
 } from "common";
 import styled from "styled-components";
 import Header from "./header";
@@ -20,7 +21,8 @@ import { UserState, setState, setScore } from "features/user/userSlice";
 const Home: React.FC = () => {
     const url = `${AWSEndpoint}/place-guess`;
     const urlGetUser = `${AWSEndpoint}/get-user`;
-    const coingeckoURL = "https://api.coingecko.com/api/v3/coins/bitcoin";
+
+    const coinCapURL = "https://api.coincap.io/v2/assets/bitcoin";
     const user = useAppSelector((state) => state.user);
     const [bitcoinPrice, setBitcoinPrice] = React.useState<number>(0);
     const [disableButtons, setDisableButtons] = React.useState<boolean>(false);
@@ -30,9 +32,10 @@ const Home: React.FC = () => {
     const [openResults, setOpenResults] = React.useState<boolean>(false);
     const dispatch = useAppDispatch();
     const [userHint, setUserHint] = React.useState<string>(USER_HINT_START);
+    const [errorMessage, setErrorMessage] = React.useState<string>(ERROR_SOMETHING_WENT_WRONG);
 
     const pollResult = async () => {
-        await setTimeout(async () => {
+        await setInterval(async () => {
             try {
                 const result = await fetch(urlGetUser, {
                     method: "POST",
@@ -60,24 +63,24 @@ const Home: React.FC = () => {
             } catch (error) {
                 console.error(error);
             }
-
-            await pollResult();
         }, 15000);
     };
 
     const fetchBitcoinPrice = async (): Promise<void> => {
-        const response = await fetch(coingeckoURL, {
+        const response = await fetch(coinCapURL, {
             method: "GET",
+            redirect: "follow",
         });
 
         if (response.status === 200) {
-            const bitcoinPriceFromAPI = (await response.json()) as Bitcoin;
-            setBitcoinPrice(+bitcoinPriceFromAPI.market_data.current_price.usd);
+            const bitcoinPrice = (await response.json()) as Bitcoin;
+
+            setBitcoinPrice(Number.parseFloat(bitcoinPrice.data.priceUsd));
         }
     };
 
     const getBitcoinPrice = async (): Promise<void> => {
-        await setTimeout(async () => {
+        await setInterval(async () => {
             await fetchBitcoinPrice();
         }, 10000);
     };
@@ -108,7 +111,11 @@ const Home: React.FC = () => {
                 setUserHint(USER_HINT_GUESSING);
                 await pollResult();
             } else {
-                setOpenSuccess(true);
+                const errorText = await response.text();
+                if (errorText) {
+                    setErrorMessage(errorText);
+                }
+                setOpenError(true);
             }
         } catch (error) {
             console.error(error);
@@ -135,7 +142,7 @@ const Home: React.FC = () => {
             </LayoutBox>
             <LayoutBox placeSelf="start">
                 <Content>
-                    <BitcoinPrice>1 BTC = {bitcoinPrice}$</BitcoinPrice>
+                    <BitcoinPrice>1 BTC = {bitcoinPrice.toFixed(2)}$</BitcoinPrice>
                     <ButtonContainer>
                         <GuessButton variant="contained" disabled={disableButtons || user.state === 1} onClick={() => placeGuess(GuessOptions.UP)}>
                             Up
@@ -147,8 +154,8 @@ const Home: React.FC = () => {
                 </Content>
             </LayoutBox>
             <Notification message="Made guess successfully! :-)" severity="success" open={openSuccess} setOpen={setOpenSuccess} />
-            <Notification message="Error while making guess! :-(" severity="error" open={openError} setOpen={setOpenError} />
-            <Notification message="Your results just came in! :-)" severity="success" open={openResults} setOpen={setOpenResults} />
+            <Notification open={openError} setOpen={setOpenError} message={errorMessage} severity="error" />
+            <Notification message="Your results just came in! :-)" severity="info" open={openResults} setOpen={setOpenResults} />
         </Layout>
     );
 };

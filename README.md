@@ -9,7 +9,6 @@ This is a simple app, that lets the user guess on the trend of Bitcoin ($BTC). T
 The user makes a guess on the Bitcoin trend behavior of the next 60 seconds. The user can either decide if the trend goes up or down. After 60 seconds a AWS lambda functions will evaluate the users decision, by comparing the Bitcoin price at the time of the guess, the Bitcoin price after 60 seconds and the guess (either UP or DOWN) of the user.
 After evaluating, the user score will be either increased by 1 (correct guess) or decreased by 1 (incorrect guess).
 Also, to put a constraint on the user and prohibit extensive use of the API, each user will only be allowed to make a guess every 60 seconds.
-If the price of bitcoin does not change during the minute of the guess, the score will not be affected.
 
 The Bitcoin price data is fetched from the CoinGecko API.
 

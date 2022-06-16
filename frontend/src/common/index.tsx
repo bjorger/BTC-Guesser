@@ -10,7 +10,7 @@ import {
     USER_HINT_GUESS_FAILURE,
     USER_HINT_PRICE_DID_NOT_CHANGE,
     ERROR_COULD_NOT_CREATE_ACCOUNT,
-    ERROR_COULD_NOT_LOG_USER_IN
+    ERROR_SOMETHING_WENT_WRONG,
 } from "./globals";
 import Notification from "./notification";
 
@@ -29,7 +29,7 @@ export {
     USER_HINT_GUESS_FAILURE,
     USER_HINT_PRICE_DID_NOT_CHANGE,
     ERROR_COULD_NOT_CREATE_ACCOUNT,
-    ERROR_COULD_NOT_LOG_USER_IN
+    ERROR_SOMETHING_WENT_WRONG,
 };
 
 export type { Bitcoin };

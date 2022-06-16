@@ -7,7 +7,7 @@ import { FormData } from "./registerForm";
 import { useCookies } from "react-cookie";
 import { setUser, User } from "features/user/userSlice";
 import Notification from "common/notification";
-import { AWSEndpoint, JWTCookieName, FormController, ERROR_COULD_NOT_LOG_USER_IN } from "common";
+import { AWSEndpoint, JWTCookieName, FormController, ERROR_SOMETHING_WENT_WRONG } from "common";
 
 const LoginForm: React.FC = () => {
     const url = `${AWSEndpoint}/login-user`;
@@ -20,7 +20,7 @@ const LoginForm: React.FC = () => {
     const [openError, setOpenError] = React.useState<boolean>(false);
     const [openLogin, setOpenLogin] = React.useState<boolean>(false);
     const [disableButton, setDisableButton] = React.useState<boolean>(false);
-    const [errorMessage, setErrorMessage] = React.useState<string>(ERROR_COULD_NOT_LOG_USER_IN);
+    const [errorMessage, setErrorMessage] = React.useState<string>(ERROR_SOMETHING_WENT_WRONG);
 
     React.useEffect(() => {
         (async () => {
