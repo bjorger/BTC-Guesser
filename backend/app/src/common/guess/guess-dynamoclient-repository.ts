@@ -67,7 +67,7 @@ export class GuessDynamoClientRepository implements GuessRepository {
 
         const btcPrice = await this.getBTCPrice();
 
-        const guessObject = new Guess(username, +btcPrice, guess);
+        const guessObject = new Guess(username, btcPrice, guess);
         const params: DynamoDB.DocumentClient.PutItemInput = {
             TableName: this.guessTable,
             Item: guessObject,
@@ -115,11 +115,12 @@ export class GuessDynamoClientRepository implements GuessRepository {
         return { guess: guessObject, userState: UserState.GUESSING };
     }
 
-    async getBTCPrice(): Promise<string> {
-        const coingeckoURL = "https://api.coingecko.com/api/v3/coins/bitcoin";
+    async getBTCPrice(): Promise<number> {
+        const coinCapURL = "https://api.coincap.io/v2/assets/bitcoin";
+
         const response = await axios({
             method: "GET",
-            url: coingeckoURL,
+            url: coinCapURL,
         });
 
         if (!response) {
@@ -127,13 +128,14 @@ export class GuessDynamoClientRepository implements GuessRepository {
         }
 
         const bitcoin = response.data as Bitcoin;
-        const btcPrice = bitcoin.market_data.current_price.usd;
 
-        return btcPrice;
+        const btcPrice = bitcoin.data.priceUsd;
+
+        return Number.parseFloat(btcPrice);
     }
 
     async evaluateGuess(username: string, guessId: string): Promise<number> {
-        const btcPrice = +(await this.getBTCPrice());
+        const btcPrice = await this.getBTCPrice();
         const params: DynamoDB.DocumentClient.GetItemInput = {
             TableName: this.guessTable,
             Key: {
@@ -183,11 +185,6 @@ export class GuessDynamoClientRepository implements GuessRepository {
 
     evaluate(btcPrice: number, guess: Guess): number {
         let guessResult = 0;
-
-        // if bitcoin price didnt change
-        if (btcPrice === guess.btcPrice) {
-            return 0;
-        }
 
         if ((btcPrice > guess.btcPrice && guess.guess === GuessOptions.UP) || (btcPrice < guess.btcPrice && guess.guess === GuessOptions.DOWN)) {
             guessResult = 1;
