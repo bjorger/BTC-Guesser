@@ -6,9 +6,9 @@ import { useCookies } from "react-cookie";
 import { setUser, UserState } from "features/user/userSlice";
 
 const Header: React.FC = () => {
-    const user = useAppSelector((state) => state.user);
     const JWTCookieName = process.env["REACT_APP_JWT_COOKIE_NAME"] || "";
 
+    const user = useAppSelector((state) => state.user);
     const [, , removeCookie] = useCookies([JWTCookieName]);
     const dispatch = useAppDispatch();
 

@@ -6,13 +6,14 @@ import styled from "styled-components";
 import { FormData } from "./registerForm";
 import { useCookies } from "react-cookie";
 import { setUser, User } from "features/user/userSlice";
-import Notification from "common/notification";
-import { AWSEndpoint, JWTCookieName, FormController, ERROR_SOMETHING_WENT_WRONG } from "common";
+import { AWSEndpoint, JWTCookieName, FormController, ERROR_SOMETHING_WENT_WRONG, Notification } from "common";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm: React.FC = () => {
     const url = `${AWSEndpoint}/login-user`;
 
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const { control, handleSubmit } = useForm<FormData>();
     const [cookies, setCookie] = useCookies([JWTCookieName]);
 
@@ -53,6 +54,7 @@ const LoginForm: React.FC = () => {
                     setCookie(JWTCookieName, JWT, { path: "/", maxAge: 3600 });
                     dispatch(setUser(user));
                     setOpenSuccess(true);
+                    navigate("/home", { replace: true });
                 } else {
                     const errorText = await response.text();
                     if (errorText) {
@@ -89,6 +91,7 @@ const LoginForm: React.FC = () => {
                 setCookie(JWTCookieName, JWT, { path: "/", maxAge: 3600 });
                 dispatch(setUser(userState));
                 setOpenSuccess(true);
+                navigate("/home", { replace: true });
             } else {
                 setOpenError(true);
             }

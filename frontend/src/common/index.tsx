@@ -12,6 +12,7 @@ import {
     ERROR_SOMETHING_WENT_WRONG,
 } from "./globals";
 import Notification from "./notification";
+import Protected from "./protected";
 
 export {
     FormController,
@@ -28,6 +29,7 @@ export {
     USER_HINT_GUESS_FAILURE,
     ERROR_COULD_NOT_CREATE_ACCOUNT,
     ERROR_SOMETHING_WENT_WRONG,
+    Protected,
 };
 
 export type { Bitcoin };

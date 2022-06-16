@@ -20,8 +20,8 @@ import { UserState, setState, setScore } from "features/user/userSlice";
 const Home: React.FC = () => {
     const url = `${AWSEndpoint}/place-guess`;
     const urlGetUser = `${AWSEndpoint}/get-user`;
-
     const coinCapURL = "https://api.coincap.io/v2/assets/bitcoin";
+
     const user = useAppSelector((state) => state.user);
     const [bitcoinPrice, setBitcoinPrice] = React.useState<number>(0);
     const [disableButtons, setDisableButtons] = React.useState<boolean>(false);
@@ -76,11 +76,7 @@ const Home: React.FC = () => {
         }
     };
 
-    const getBitcoinPrice = async (): Promise<void> => {
-        setInterval(async () => {
-            await fetchBitcoinPrice();
-        }, 10000);
-    };
+    const fetchBitcoinPriceMemoized = React.useCallback(async () => fetchBitcoinPrice(), []);
 
     const placeGuess = async (guess: GuessOptions): Promise<void> => {
         if (user.state === UserState.GUESSING) {
@@ -122,15 +118,19 @@ const Home: React.FC = () => {
     };
 
     React.useEffect(() => {
+        console.log("use effct1");
         if (user.state === UserState.GUESSING) {
             (async () => pollResult())();
         }
     }, [user]);
 
     React.useEffect(() => {
-        (async () => fetchBitcoinPrice())();
-        (async () => getBitcoinPrice())();
-    }, [getBitcoinPrice, fetchBitcoinPrice]);
+        console.log("use effct2");
+        (async () => fetchBitcoinPriceMemoized())();
+        setInterval(async () => {
+            await fetchBitcoinPriceMemoized();
+        }, 10000);
+    }, [fetchBitcoinPriceMemoized]);
 
     return (
         <Layout>
