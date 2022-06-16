@@ -76,8 +76,6 @@ const Home: React.FC = () => {
         }
     };
 
-    const fetchBitcoinPriceMemoized = React.useCallback(async () => fetchBitcoinPrice(), []);
-
     const placeGuess = async (guess: GuessOptions): Promise<void> => {
         if (user.state === UserState.GUESSING) {
             return;
@@ -118,19 +116,17 @@ const Home: React.FC = () => {
     };
 
     React.useEffect(() => {
-        console.log("use effct1");
         if (user.state === UserState.GUESSING) {
-            (async () => pollResult())();
+            pollResult();
         }
     }, [user]);
 
     React.useEffect(() => {
-        console.log("use effct2");
-        (async () => fetchBitcoinPriceMemoized())();
+        (async () => fetchBitcoinPrice())();
         setInterval(async () => {
-            await fetchBitcoinPriceMemoized();
+            await fetchBitcoinPrice();
         }, 10000);
-    }, [fetchBitcoinPriceMemoized]);
+    }, [fetchBitcoinPrice]);
 
     return (
         <Layout>
