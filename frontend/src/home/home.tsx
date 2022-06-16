@@ -33,8 +33,8 @@ const Home: React.FC = () => {
     const [userHint, setUserHint] = React.useState<string>(USER_HINT_START);
     const [errorMessage, setErrorMessage] = React.useState<string>(ERROR_SOMETHING_WENT_WRONG);
 
-    const pollResult = async () => {
-        await setInterval(async () => {
+    const pollResult = () => {
+        const polling = setInterval(async () => {
             try {
                 const result = await fetch(urlGetUser, {
                     method: "POST",
@@ -54,7 +54,7 @@ const Home: React.FC = () => {
 
                         dispatch(setScore(score));
                         dispatch(setState(UserState.CAN_GUESS));
-                        return;
+                        clearInterval(polling);
                     }
                 }
             } catch (error) {
@@ -77,7 +77,7 @@ const Home: React.FC = () => {
     };
 
     const getBitcoinPrice = async (): Promise<void> => {
-        await setInterval(async () => {
+        setInterval(async () => {
             await fetchBitcoinPrice();
         }, 10000);
     };
@@ -125,6 +125,9 @@ const Home: React.FC = () => {
         if (user.state === UserState.GUESSING) {
             (async () => pollResult())();
         }
+    }, [user]);
+
+    React.useEffect(() => {
         (async () => fetchBitcoinPrice())();
         (async () => getBitcoinPrice())();
     }, [getBitcoinPrice, fetchBitcoinPrice]);
