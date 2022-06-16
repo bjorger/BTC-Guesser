@@ -5,6 +5,5 @@ export const USER_HINT_GUESSING =
     "Your guess has been accepted! This page will update itself and inform you if your guess was either successful or not.";
 export const USER_HINT_GUESS_SUCCESS = "Your guess was a success! Check your score to see how many points you have.";
 export const USER_HINT_GUESS_FAILURE = "Better luck next time! :-(";
-export const USER_HINT_PRICE_DID_NOT_CHANGE = "The price did not change. Your score won't change";
 export const ERROR_COULD_NOT_CREATE_ACCOUNT = "Error while creating Account!";
 export const ERROR_SOMETHING_WENT_WRONG = "Oops! Something went wrong! :-(";

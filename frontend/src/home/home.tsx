@@ -3,7 +3,6 @@ import {
     Bitcoin,
     Layout,
     LayoutBox,
-    USER_HINT_PRICE_DID_NOT_CHANGE,
     USER_HINT_GUESSING,
     USER_HINT_GUESS_FAILURE,
     USER_HINT_GUESS_SUCCESS,
@@ -49,8 +48,6 @@ const Home: React.FC = () => {
 
                         if (score > user.score) {
                             setUserHint(USER_HINT_GUESS_SUCCESS);
-                        } else if (score === user.score) {
-                            setUserHint(USER_HINT_PRICE_DID_NOT_CHANGE);
                         } else {
                             setUserHint(USER_HINT_GUESS_FAILURE);
                         }
