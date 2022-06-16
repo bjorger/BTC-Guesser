@@ -13,7 +13,7 @@ const Header: React.FC = () => {
     const dispatch = useAppDispatch();
 
     const logOut = async () => {
-        removeCookie(JWTCookieName);
+        removeCookie(JWTCookieName, { path: "/" });
         dispatch(
             setUser({
                 username: "",
