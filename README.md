@@ -47,3 +47,4 @@ The stack consists as follows:
 -   Material UI
 -   Redux
 -   GitHub Pages for hosting
+-   React Router v6 
